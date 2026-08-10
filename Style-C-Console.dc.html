@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#111210; }
+  * { box-sizing:border-box; }
+  a { color:oklch(0.84 0.16 92); text-decoration:none; }
+  a:hover { color:oklch(0.94 0.14 92); }
+  @keyframes blink { 0%,49% { opacity:1; } 50%,100% { opacity:0; } }
+</style>
+</helmet>
+<div style="min-height:100vh;background:#111210;background-image:repeating-linear-gradient(0deg, oklch(1 0 0 / 0.022) 0 1px, transparent 1px 3px);color:oklch(0.90 0.02 95);font-family:'IBM Plex Mono',monospace;font-size:14.5px;line-height:1.6;">
+
+  <header style="border-bottom:1px solid oklch(0.84 0.16 92 / 0.28);">
+    <div style="max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,28px);height:60px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <span style="font-weight:600;letter-spacing:0.06em;color:oklch(0.86 0.16 92);">POROUS-Si::DEGRADE<span style="animation:blink 1.1s step-end infinite;">_</span></span>
+      <nav style="display:flex;gap:2px;font-size:13px;letter-spacing:0.04em;flex-wrap:wrap;">
+        <span style="padding:6px 12px;background:oklch(0.84 0.16 92);color:#111210;font-weight:600;">[HOME]</span>
+        <span style="padding:6px 12px;color:oklch(0.62 0.03 95);">[THEORY]</span>
+        <span style="padding:6px 12px;color:oklch(0.62 0.03 95);">[EXAMPLES]</span>
+        <span style="padding:6px 12px;color:oklch(0.62 0.03 95);">[YOUR&nbsp;PARTICLE]</span>
+        <span style="padding:6px 12px;color:oklch(0.62 0.03 95);">[DESIGN]</span>
+      </nav>
+    </div>
+  </header>
+
+  <div style="border-bottom:1px solid oklch(0.84 0.16 92 / 0.18);background:oklch(0.84 0.16 92 / 0.07);">
+    <div style="max-width:1180px;margin:0 auto;padding:8px clamp(16px,4vw,28px);font-size:12.5px;color:oklch(0.72 0.09 92);letter-spacing:0.04em;">&gt; model: dissolution + transport &middot; regimes: fast-diffusion | diffusion-controlled | coupled &middot; status: MVP&nbsp;0</div>
+  </div>
+
+  <main style="max-width:1180px;margin:0 auto;padding:clamp(44px,7vw,80px) clamp(16px,4vw,28px) 84px;">
+    <div style="max-width:840px;">
+      <div style="font-size:12.5px;letter-spacing:0.2em;color:oklch(0.70 0.10 92);margin-bottom:22px;">// INTERACTIVE COMPANION TO THE ARTICLE</div>
+      <h1 style="margin:0 0 24px;font-family:'Archivo',system-ui,sans-serif;font-size:clamp(36px,6.4vw,64px);line-height:1.0;font-weight:700;letter-spacing:-0.03em;text-transform:uppercase;text-wrap:balance;">Run the dissolution<br><span style="color:oklch(0.86 0.16 92);">before the experiment</span></h1>
+      <p style="margin:0 0 32px;font-size:15.5px;line-height:1.7;color:oklch(0.74 0.02 95);max-width:660px;text-wrap:pretty;">A porous particle degrades by two coupled processes: dissolution of the solid skeleton, and transport of dissolved species out of the pore network. Inspect published data, fit your own curve, solve the complete model, design to a target lifetime.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;">
+        <span style="padding:12px 22px;background:oklch(0.84 0.16 92);color:#111210;font-weight:600;letter-spacing:0.04em;">&gt; ANALYSE MY DATA</span>
+        <span style="padding:12px 22px;border:1px solid oklch(0.84 0.16 92 / 0.4);color:oklch(0.86 0.10 92);letter-spacing:0.04em;">&gt; BROWSE EXAMPLES</span>
+      </div>
+    </div>
+
+    <div style="margin:56px 0;border:1px solid oklch(0.84 0.16 92 / 0.24);">
+      <div style="padding:8px 14px;border-bottom:1px solid oklch(0.84 0.16 92 / 0.24);font-size:12px;letter-spacing:0.14em;color:oklch(0.70 0.09 92);">USER&nbsp;JOURNEY</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+        <sc-for list="{{ journey }}" as="j" hint-placeholder-count="5">
+          <div style="padding:16px 18px;border-right:1px solid oklch(0.84 0.16 92 / 0.14);display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:11.5px;color:oklch(0.66 0.10 92);letter-spacing:0.12em;">{{ j.n }}</span>
+            <span style="font-size:14.5px;color:oklch(0.92 0.02 95);">{{ j.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:14px;">
+      <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4">
+        <div style="border:1px solid oklch(0.84 0.16 92 / 0.24);background:oklch(0.84 0.16 92 / 0.035);padding:0;min-height:220px;display:flex;flex-direction:column;" style-hover="border-color:oklch(0.84 0.16 92 / 0.7);">
+          <div style="padding:8px 14px;border-bottom:1px solid oklch(0.84 0.16 92 / 0.20);font-size:11.5px;letter-spacing:0.14em;color:oklch(0.70 0.09 92);display:flex;justify-content:space-between;">
+            <span>{{ c.num }}</span><span>&#9646;</span>
+          </div>
+          <div style="padding:18px 18px 20px;display:flex;flex-direction:column;gap:10px;flex:1;">
+            <span style="font-family:'Archivo',system-ui,sans-serif;font-size:18.5px;font-weight:600;letter-spacing:-0.01em;color:oklch(0.94 0.02 95);">{{ c.title }}</span>
+            <span style="font-size:13.5px;line-height:1.6;color:oklch(0.70 0.02 95);text-wrap:pretty;">{{ c.body }}</span>
+            <span style="margin-top:auto;font-size:13px;color:oklch(0.86 0.16 92);letter-spacing:0.04em;">&gt; {{ c.cta }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="margin-top:22px;border:1px solid oklch(0.84 0.16 92 / 0.24);">
+      <div style="padding:8px 14px;border-bottom:1px solid oklch(0.84 0.16 92 / 0.24);font-size:12px;letter-spacing:0.14em;color:oklch(0.70 0.09 92);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <span>PREDICTED&nbsp;DEGRADATION</span><span style="color:oklch(0.58 0.02 95);">t50 &middot; t90 &middot; residuals &middot; reset</span>
+      </div>
+      <div style="padding:20px 22px 16px;">
+        <div style="height:250px;border-left:1px solid oklch(0.84 0.16 92 / 0.45);border-bottom:1px solid oklch(0.84 0.16 92 / 0.45);background-image:linear-gradient(oklch(0.84 0.16 92 / 0.07) 1px, transparent 1px), linear-gradient(90deg, oklch(0.84 0.16 92 / 0.07) 1px, transparent 1px);background-size:44px 34px;display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:12.5px;color:oklch(0.58 0.03 95);letter-spacing:0.05em;">[ plot area &mdash; experimental points + model curve ]</span>
+        </div>
+        <div style="display:flex;gap:20px;padding-top:14px;font-size:12.5px;color:oklch(0.66 0.02 95);flex-wrap:wrap;">
+          <span style="color:oklch(0.86 0.16 92);">&#9679; experiment</span>
+          <span style="color:oklch(0.78 0.13 200);">&#9472;&#9472; fast-diffusion limit</span>
+          <span>&#9548;&#9548; full coupled model</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      journey: [
+        { n: "01", label: "Learn" }, { n: "02", label: "Inspect evidence" },
+        { n: "03", label: "Analyse your data" }, { n: "04", label: "Explore the full model" },
+        { n: "05", label: "Design a particle" }
+      ],
+      cards: [
+        { num: "01", title: "Browse examples", body: "Curated literature degradation datasets with metadata, model curves and a link to every source.", cta: "OPEN CATALOGUE" },
+        { num: "02", title: "Analyse my data", body: "Import a lab CSV, map time and measurement columns, fit a limiting model, get a timescale.", cta: "START ANALYSIS" },
+        { num: "03", title: "Design a particle", body: "Pick particle, treatment and environment parameters; read the predicted profile with t50 and t90.", cta: "OPEN SANDBOX" },
+        { num: "04", title: "Read the theory", body: "Dissolution, transport, symmetry reduction, limiting regimes and coatings — in the tools' own terms.", cta: "READ THE MODEL" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

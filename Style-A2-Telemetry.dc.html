@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#07090c; }
+  * { box-sizing:border-box; }
+  a { color:oklch(0.84 0.14 88); text-decoration:none; }
+  a:hover { color:oklch(0.93 0.12 88); }
+  @keyframes sweep { 0% { transform:translateX(-120%); } 100% { transform:translateX(420%); } }
+  @keyframes tick { 0%,100% { opacity:0.4; } 50% { opacity:1; } }
+</style>
+</helmet>
+<div style="min-height:100vh;background:#07090c;background-image:radial-gradient(760px 460px at 92% 0%, oklch(0.50 0.11 250 / 0.22), transparent 64%);color:oklch(0.93 0.01 240);font-family:'Space Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.55;">
+
+  <header style="border-bottom:1px solid oklch(0.85 0.02 240 / 0.14);">
+    <div style="max-width:1260px;margin:0 auto;padding:0 clamp(16px,4vw,32px);height:64px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="width:9px;height:9px;background:oklch(0.84 0.14 88);animation:tick 2s ease-in-out infinite;"></span>
+        <span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:0.2em;text-transform:uppercase;color:oklch(0.88 0.03 240);">porous&#8202;-&#8202;Si&#8201;/&#8201;degradation</span>
+      </div>
+      <nav style="display:flex;gap:22px;font:400 13px 'JetBrains Mono',monospace;color:oklch(0.60 0.02 240);flex-wrap:wrap;">
+        <span style="color:oklch(0.84 0.14 88);border-bottom:1px solid oklch(0.84 0.14 88);padding-bottom:2px;">Home</span>
+        <span>Theory</span><span>Examples</span><span>Your&nbsp;Particle</span><span>Design</span>
+      </nav>
+    </div>
+  </header>
+
+  <main style="max-width:1260px;margin:0 auto;padding:clamp(40px,6vw,72px) clamp(16px,4vw,32px) 88px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:36px;align-items:center;">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:9px;font:400 11px 'JetBrains Mono',monospace;letter-spacing:0.18em;text-transform:uppercase;color:oklch(0.80 0.11 88);border-left:2px solid oklch(0.84 0.14 88);padding-left:10px;margin-bottom:24px;">interactive companion to the article</div>
+        <h1 style="margin:0 0 22px;font-size:clamp(34px,4.8vw,54px);line-height:1.04;font-weight:700;letter-spacing:-0.035em;text-wrap:balance;">Two processes decide<br>how long a particle lives.</h1>
+        <p style="margin:0 0 30px;font-size:17px;line-height:1.62;color:oklch(0.72 0.02 240);max-width:560px;text-wrap:pretty;">Dissolution of the solid skeleton, transport of dissolved species out of the pore network. Inspect the published evidence, fit your own curve, solve the complete coupled model, design to a target lifetime.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:30px;">
+          <span style="padding:13px 26px;background:oklch(0.84 0.14 88);color:#07090c;font-weight:600;font-size:15px;">Analyse my data</span>
+          <span style="padding:13px 26px;border:1px solid oklch(0.85 0.02 240 / 0.28);color:oklch(0.90 0.02 240);font-size:15px;">Browse examples</span>
+        </div>
+        <div style="display:flex;gap:0;border:1px solid oklch(0.85 0.02 240 / 0.14);max-width:520px;">
+          <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3">
+            <div style="flex:1;padding:14px 16px;border-right:1px solid oklch(0.85 0.02 240 / 0.14);">
+              <div style="font:400 10.5px 'JetBrains Mono',monospace;letter-spacing:0.16em;color:oklch(0.62 0.02 240);margin-bottom:5px;">{{ s.k }}</div>
+              <div style="font:500 19px 'JetBrains Mono',monospace;color:oklch(0.86 0.13 88);">{{ s.v }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:relative;border:1px solid oklch(0.85 0.02 240 / 0.16);background:linear-gradient(180deg, oklch(0.28 0.02 245 / 0.42), oklch(0.18 0.01 245 / 0.20));padding:20px 22px 16px;">
+        <span style="position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid oklch(0.84 0.14 88);border-left:2px solid oklch(0.84 0.14 88);"></span>
+        <span style="position:absolute;top:-1px;right:-1px;width:14px;height:14px;border-top:2px solid oklch(0.84 0.14 88);border-right:2px solid oklch(0.84 0.14 88);"></span>
+        <span style="position:absolute;bottom:-1px;left:-1px;width:14px;height:14px;border-bottom:2px solid oklch(0.84 0.14 88);border-left:2px solid oklch(0.84 0.14 88);"></span>
+        <span style="position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid oklch(0.84 0.14 88);border-right:2px solid oklch(0.84 0.14 88);"></span>
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:16px;">
+          <span style="font:400 11px 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.80 0.11 88);">predicted degradation</span>
+          <span style="font:400 11px 'JetBrains Mono',monospace;color:oklch(0.56 0.02 240);">sample run</span>
+        </div>
+        <div style="display:flex;gap:12px;">
+          <div style="writing-mode:vertical-rl;transform:rotate(180deg);font:400 11px 'JetBrains Mono',monospace;letter-spacing:0.08em;color:oklch(0.58 0.02 240);text-align:center;padding:4px 0;">dissolved Si, fraction</div>
+          <div style="flex:1;">
+            <div style="position:relative;height:262px;border-left:1px solid oklch(0.85 0.02 240 / 0.35);border-bottom:1px solid oklch(0.85 0.02 240 / 0.35);background-image:linear-gradient(oklch(0.85 0.02 240 / 0.07) 1px, transparent 1px), linear-gradient(90deg, oklch(0.85 0.02 240 / 0.07) 1px, transparent 1px);background-size:10% 20%;overflow:hidden;">
+              <span style="position:absolute;top:0;bottom:0;width:64px;background:linear-gradient(90deg, transparent, oklch(0.84 0.14 88 / 0.10), transparent);animation:sweep 6s linear infinite;"></span>
+              <svg viewBox="0 0 600 300" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;">
+                <path d="M0,300 L25,257 L50,221 L75,190 L100,164 L125,142 L150,123 L175,107 L200,94 L225,82 L250,73 L275,65 L300,58 L350,47 L400,40 L450,34 L500,30 L550,27 L600,25 L600,300 Z" fill="oklch(0.84 0.14 88 / 0.07)" stroke="none"></path>
+                <path d="M0,300 L25,257 L50,221 L75,190 L100,164 L125,142 L150,123 L175,107 L200,94 L225,82 L250,73 L275,65 L300,58 L350,47 L400,40 L450,34 L500,30 L550,27 L600,25" fill="none" stroke="oklch(0.84 0.14 88)" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+                <path d="M0,300 L25,289 L50,269 L75,243 L100,216 L125,188 L150,159 L175,137 L200,114 L225,96 L250,79 L275,66 L300,55 L350,40 L400,30 L450,25 L500,23 L550,21 L600,21" fill="none" stroke="oklch(0.80 0.13 230)" stroke-width="2" stroke-dasharray="8 6" vector-effect="non-scaling-stroke"></path>
+              </svg>
+              <div style="position:absolute;left:0;right:0;bottom:46.7%;border-top:1px dashed oklch(0.85 0.02 240 / 0.30);"></div>
+              <div style="position:absolute;left:17.3%;bottom:0;height:46.7%;border-left:1px dashed oklch(0.85 0.02 240 / 0.30);"></div>
+              <div style="position:absolute;left:18.5%;bottom:47.8%;font:400 10.5px 'JetBrains Mono',monospace;color:oklch(0.80 0.11 88);">t50</div>
+              <div style="position:absolute;left:0;right:0;bottom:84%;border-top:1px dashed oklch(0.85 0.02 240 / 0.18);"></div>
+              <div style="position:absolute;left:0.5%;bottom:85%;font:400 10.5px 'JetBrains Mono',monospace;color:oklch(0.62 0.02 240);">t90</div>
+              <div style="position:absolute;left:4.17%;bottom:12.7%;width:6px;height:6px;background:oklch(0.94 0.01 240);transform:translate(-50%,50%) rotate(45deg);"></div>
+              <div style="position:absolute;left:8.33%;bottom:24%;width:6px;height:6px;background:oklch(0.94 0.01 240);transform:translate(-50%,50%) rotate(45deg);"></div>
+              <div style="position:absolute;left:16.7%;bottom:47.3%;width:6px;height:6px;background:oklch(0.94 0.01 240);transform:translate(-50%,50%) rotate(45deg);"></div>
+              <div style="position:absolute;left:25%;bottom:56.7%;width:6px;height:6px;background:oklch(0.94 0.01 240);transform:translate(-50%,50%) rotate(45deg);"></div>
+              <div style="position:absolute;left:33.3%;bottom:70.7%;width:6px;height:6px;background:oklch(0.94 0.01 240);transform:translate(-50%,50%) rotate(45deg);"></div>
+              <div style="position:absolute;left:41.7%;bottom:73.3%;width:6px;height:6px;background:oklch(0.94 0.01 240);transform:translate(-50%,50%) rotate(45deg);"></div>
+              <div style="position:absolute;left:50%;bottom:82.7%;width:6px;height:6px;background:oklch(0.94 0.01 240);transform:translate(-50%,50%) rotate(45deg);"></div>
+              <div style="position:absolute;left:66.7%;bottom:85.3%;width:6px;height:6px;background:oklch(0.94 0.01 240);transform:translate(-50%,50%) rotate(45deg);"></div>
+              <div style="position:absolute;left:83.3%;bottom:90.7%;width:6px;height:6px;background:oklch(0.94 0.01 240);transform:translate(-50%,50%) rotate(45deg);"></div>
+              <div style="position:absolute;left:96.7%;bottom:91%;width:6px;height:6px;background:oklch(0.94 0.01 240);transform:translate(-50%,50%) rotate(45deg);"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-top:7px;font:400 10.5px 'JetBrains Mono',monospace;color:oklch(0.54 0.02 240);">
+              <span>0</span><span>150</span><span>300</span><span>450</span><span>600</span>
+            </div>
+            <div style="text-align:center;font:400 11px 'JetBrains Mono',monospace;letter-spacing:0.08em;color:oklch(0.58 0.02 240);">time, h</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:18px;padding-top:14px;margin-top:2px;border-top:1px solid oklch(0.85 0.02 240 / 0.12);font:400 11.5px 'JetBrains Mono',monospace;color:oklch(0.62 0.02 240);flex-wrap:wrap;">
+          <span style="display:flex;align-items:center;gap:7px;"><span style="width:6px;height:6px;background:oklch(0.94 0.01 240);transform:rotate(45deg);"></span>experiment</span>
+          <span style="display:flex;align-items:center;gap:7px;"><span style="width:18px;height:2px;background:oklch(0.84 0.14 88);"></span>fast-diffusion limit</span>
+          <span style="display:flex;align-items:center;gap:7px;"><span style="width:18px;height:2px;background:repeating-linear-gradient(90deg, oklch(0.80 0.13 230) 0 6px, transparent 6px 11px);"></span>coupled model</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:56px;display:grid;grid-template-columns:repeat(auto-fit,minmax(262px,1fr));gap:16px;">
+      <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4">
+        <div style="position:relative;border:1px solid oklch(0.85 0.02 240 / 0.16);background:oklch(0.24 0.02 245 / 0.30);padding:24px 22px;min-height:214px;display:flex;flex-direction:column;gap:10px;" style-hover="border-color:oklch(0.84 0.14 88 / 0.55);">
+          <span style="position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg, oklch(0.84 0.14 88), transparent 70%);"></span>
+          <span style="font:400 10.5px 'JetBrains Mono',monospace;letter-spacing:0.18em;color:oklch(0.78 0.10 88);">{{ c.num }}</span>
+          <span style="font-size:18.5px;font-weight:600;letter-spacing:-0.015em;">{{ c.title }}</span>
+          <span style="font-size:13.8px;line-height:1.55;color:oklch(0.70 0.02 240);text-wrap:pretty;">{{ c.body }}</span>
+          <span style="margin-top:auto;font:400 12.5px 'JetBrains Mono',monospace;color:oklch(0.84 0.14 88);">{{ c.cta }} &rarr;</span>
+        </div>
+      </sc-for>
+    </div>
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      stats: [
+        { k: "REGIMES", v: "3" },
+        { k: "OBSERVABLES", v: "3" },
+        { k: "METRICS", v: "t50 / t90" }
+      ],
+      cards: [
+        { num: "01", title: "Browse examples", body: "Curated literature degradation datasets with metadata, model curves and a link to every source.", cta: "Open catalogue" },
+        { num: "02", title: "Analyse my data", body: "Import a lab CSV, map time and measurement columns, fit a limiting model, get a timescale.", cta: "Start analysis" },
+        { num: "03", title: "Design a particle", body: "Pick particle, treatment and environment parameters; read the predicted profile with t50 and t90.", cta: "Open sandbox" },
+        { num: "04", title: "Read the theory", body: "Dissolution, transport, symmetry reduction, limiting regimes and coatings — in the tools' own terms.", cta: "Read the model" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

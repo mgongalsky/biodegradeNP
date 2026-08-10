@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:oklch(0.985 0.003 255); }
+  * { box-sizing:border-box; }
+  a { color:oklch(0.52 0.15 255); text-decoration:none; }
+  a:hover { color:oklch(0.40 0.15 255); text-decoration:underline; }
+  input, select, button, textarea { font-family:'IBM Plex Sans', system-ui, sans-serif; }
+  ::selection { background:oklch(0.52 0.15 255 / 0.18); }
+</style>
+</helmet>
+<div style="min-height:100vh;background:oklch(0.985 0.003 255);color:oklch(0.24 0.02 255);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:15px;line-height:1.55;">
+
+  <header style="position:sticky;top:0;z-index:20;background:oklch(0.985 0.003 255 / 0.92);backdrop-filter:blur(8px);border-bottom:1px solid oklch(0.9 0.006 255);">
+    <div style="max-width:1220px;margin:0 auto;padding:0 clamp(16px,4vw,32px);height:66px;display:flex;align-items:center;justify-content:space-between;gap:32px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+        <div style="width:22px;height:22px;border:1.5px solid oklch(0.52 0.15 255);border-radius:50%;background:radial-gradient(circle at 50% 50%, transparent 34%, oklch(0.52 0.15 255 / 0.18) 35%);"></div>
+        <span style="font:500 13px 'IBM Plex Mono',monospace;letter-spacing:0.02em;color:oklch(0.24 0.02 255);">porous-Si / biodegradation</span>
+      </div>
+      <nav style="display:flex;align-items:stretch;gap:4px;height:66px;overflow-x:auto;">
+        <button onClick="{{ goHome }}" style="position:relative;background:none;border:0;padding:0 14px;font-size:14px;color:oklch(0.40 0.02 255);cursor:pointer;white-space:nowrap;" style-hover="color:oklch(0.24 0.02 255);">Home
+          <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:14px;right:14px;bottom:0;height:2px;background:oklch(0.52 0.15 255);"></span></sc-if>
+        </button>
+        <button onClick="{{ goTheory }}" style="position:relative;background:none;border:0;padding:0 14px;font-size:14px;color:oklch(0.40 0.02 255);cursor:pointer;white-space:nowrap;" style-hover="color:oklch(0.24 0.02 255);">Theory
+          <sc-if value="{{ isTheory }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:14px;right:14px;bottom:0;height:2px;background:oklch(0.52 0.15 255);"></span></sc-if>
+        </button>
+        <button onClick="{{ goExamples }}" style="position:relative;background:none;border:0;padding:0 14px;font-size:14px;color:oklch(0.40 0.02 255);cursor:pointer;white-space:nowrap;" style-hover="color:oklch(0.24 0.02 255);">Examples
+          <sc-if value="{{ isExamples }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:14px;right:14px;bottom:0;height:2px;background:oklch(0.52 0.15 255);"></span></sc-if>
+        </button>
+        <button onClick="{{ goParticle }}" style="position:relative;background:none;border:0;padding:0 14px;font-size:14px;color:oklch(0.40 0.02 255);cursor:pointer;white-space:nowrap;" style-hover="color:oklch(0.24 0.02 255);">Your Particle
+          <sc-if value="{{ isParticle }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:14px;right:14px;bottom:0;height:2px;background:oklch(0.52 0.15 255);"></span></sc-if>
+        </button>
+        <button onClick="{{ goDesign }}" style="position:relative;background:none;border:0;padding:0 14px;font-size:14px;color:oklch(0.40 0.02 255);cursor:pointer;white-space:nowrap;" style-hover="color:oklch(0.24 0.02 255);">{{ sandboxNav }}
+          <sc-if value="{{ isDesign }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:14px;right:14px;bottom:0;height:2px;background:oklch(0.52 0.15 255);"></span></sc-if>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <sc-if value="{{ badges }}" hint-placeholder-val="{{ true }}">
+    <div style="background:oklch(0.62 0.15 45 / 0.10);border-bottom:1px solid oklch(0.62 0.15 45 / 0.28);">
+      <div style="max-width:1220px;margin:0 auto;padding:9px clamp(16px,4vw,32px);font:400 12.5px 'IBM Plex Mono',monospace;color:oklch(0.45 0.10 45);display:flex;gap:10px;align-items:center;">
+        <span style="font-weight:500;">MVP 0</span>
+        <span style="opacity:0.55;">|</span>
+        <span>clickable shell — no fitting or model calculation is performed; all data shown are placeholders</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ HOME ============ -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <main style="max-width:1220px;margin:0 auto;padding:clamp(40px,7vw,72px) clamp(16px,4vw,32px) 96px;">
+    <div style="max-width:820px;">
+      <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:20px;">Interactive companion to the article</div>
+      <h1 style="margin:0 0 24px;font-size:clamp(32px,5.5vw,52px);line-height:1.06;font-weight:600;letter-spacing:-0.02em;text-wrap:balance;">Biodegradation of porous silicon, as a model you can interrogate</h1>
+      <p style="margin:0 0 16px;font-size:18px;line-height:1.6;color:oklch(0.40 0.02 255);text-wrap:pretty;">Degradation of a porous particle is governed by two coupled processes — <strong style="font-weight:500;color:oklch(0.24 0.02 255);">dissolution</strong> of the solid skeleton and <strong style="font-weight:500;color:oklch(0.24 0.02 255);">transport</strong> of dissolved species out of the pore network. This site lets you inspect literature datasets against that model, fit your own degradation curve, solve the complete coupled problem, and design a hypothetical particle with a target degradation time.</p>
+      <p style="margin:0;font-size:15px;color:oklch(0.52 0.015 255);">Nothing needs to be uploaded to browse. Start anywhere.</p>
+    </div>
+
+    <div style="margin:56px 0 64px;padding:22px 26px;border:1px solid oklch(0.9 0.006 255);border-radius:2px;background:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;">
+      <span style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-right:8px;">User journey</span>
+      <sc-for list="{{ journey }}" as="step" hint-placeholder-count="5">
+        <span style="display:flex;align-items:center;gap:16px;">
+          <span style="font-size:14.5px;color:oklch(0.24 0.02 255);">{{ step.label }}</span>
+          <span style="color:oklch(0.75 0.01 255);">&rarr;</span>
+        </span>
+      </sc-for>
+      <span style="font-size:14.5px;color:oklch(0.52 0.15 255);">Design a particle</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;">
+      <sc-for list="{{ entryCards }}" as="card" hint-placeholder-count="4">
+        <button onClick="{{ card.go }}" style="text-align:left;background:#fff;border:1px solid oklch(0.9 0.006 255);border-radius:2px;padding:24px 22px 22px;cursor:pointer;display:flex;flex-direction:column;gap:10px;min-height:210px;transition:border-color 140ms, transform 140ms;" style-hover="border-color:oklch(0.52 0.15 255);transform:translateY(-2px);">
+          <span style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;color:oklch(0.62 0.15 45);">{{ card.num }}</span>
+          <span style="font-size:19px;font-weight:600;letter-spacing:-0.01em;color:oklch(0.24 0.02 255);">{{ card.title }}</span>
+          <span style="font-size:14px;line-height:1.5;color:oklch(0.52 0.015 255);text-wrap:pretty;">{{ card.body }}</span>
+          <span style="margin-top:auto;font:400 13px 'IBM Plex Mono',monospace;color:oklch(0.52 0.15 255);">{{ card.cta }} &rarr;</span>
+        </button>
+      </sc-for>
+    </div>
+
+    <div style="margin-top:64px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;align-items:start;">
+      <div style="border:1px solid oklch(0.9 0.006 255);border-left:3px solid oklch(0.52 0.15 255);border-radius:2px;background:#fff;padding:26px 28px;">
+        <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:14px;">Source article</div>
+        <div style="font-family:'IBM Plex Serif',Georgia,serif;font-size:19px;line-height:1.4;margin-bottom:10px;">Dissolution- and diffusion-controlled biodegradation of porous silicon nanoparticles</div>
+        <div style="font-size:14px;color:oklch(0.52 0.015 255);margin-bottom:16px;">Author list pending &middot; Journal pending &middot; Year pending</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <span style="font:400 12.5px 'IBM Plex Mono',monospace;padding:5px 10px;border:1px dashed oklch(0.82 0.01 255);border-radius:2px;color:oklch(0.52 0.015 255);">DOI: to be added</span>
+          <span style="font:400 12.5px 'IBM Plex Mono',monospace;padding:5px 10px;border:1px dashed oklch(0.82 0.01 255);border-radius:2px;color:oklch(0.52 0.015 255);">BibTeX: to be added</span>
+        </div>
+      </div>
+      <div style="border:1px solid oklch(0.9 0.006 255);border-radius:2px;background:#fff;padding:26px 28px;">
+        <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:14px;">Where things stand</div>
+        <sc-for list="{{ roadmap }}" as="r" hint-placeholder-count="5">
+          <div style="display:flex;gap:12px;align-items:baseline;padding:7px 0;border-bottom:1px solid oklch(0.94 0.004 255);">
+            <span style="font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);width:52px;flex-shrink:0;">{{ r.id }}</span>
+            <span style="font-size:14px;flex:1;">{{ r.name }}</span>
+            <span style="font:400 11.5px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">{{ r.state }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ============ THEORY ============ -->
+  <sc-if value="{{ isTheory }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:1220px;margin:0 auto;padding:56px clamp(16px,4vw,32px) 96px;">
+    <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:16px;">02 / Theory</div>
+    <h1 style="margin:0 0 18px;font-size:clamp(28px,4.6vw,40px);line-height:1.1;font-weight:600;letter-spacing:-0.02em;">From physical picture to solution regimes</h1>
+    <p style="margin:0 0 32px;max-width:720px;font-size:17px;color:oklch(0.40 0.02 255);text-wrap:pretty;">The hierarchy of the model, readable without the article. Written last on purpose, so that its terminology, symbols and plot conventions match the working tools rather than diverging from them.</p>
+
+    <div style="border:1px solid oklch(0.62 0.15 45 / 0.35);background:oklch(0.62 0.15 45 / 0.07);border-radius:2px;padding:18px 22px;margin-bottom:44px;font-size:14.5px;color:oklch(0.38 0.06 45);max-width:720px;">
+      <strong style="font-weight:600;">Placeholder section.</strong> Theory content is scheduled for MVP 5. The outline below is the final structure; each entry will carry explanatory prose, a schematic, and links into live examples and tools.
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:20px;">
+      <sc-for list="{{ theory }}" as="t" hint-placeholder-count="10">
+        <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:20px 22px 22px;display:flex;flex-direction:column;gap:12px;">
+          <div style="font:400 11.5px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">{{ t.num }}</div>
+          <div style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">{{ t.title }}</div>
+          <div style="font-size:14px;line-height:1.5;color:oklch(0.52 0.015 255);text-wrap:pretty;">{{ t.body }}</div>
+          <div style="margin-top:4px;height:104px;border:1px dashed oklch(0.84 0.01 255);border-radius:2px;background:repeating-linear-gradient(135deg, oklch(0.96 0.004 255) 0 6px, #fff 6px 12px);display:flex;align-items:center;justify-content:center;">
+            <span style="font:400 11.5px 'IBM Plex Mono',monospace;color:oklch(0.58 0.015 255);text-align:center;padding:0 12px;">{{ t.figure }}</span>
+          </div>
+          <a href="#" style="font:400 13px 'IBM Plex Mono',monospace;">{{ t.link }} &rarr;</a>
+        </div>
+      </sc-for>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ============ EXAMPLES ============ -->
+  <sc-if value="{{ isExamples }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:1220px;margin:0 auto;padding:56px clamp(16px,4vw,32px) 96px;">
+
+    <sc-if value="{{ noDetail }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:16px;">03 / Examples</div>
+      <h1 style="margin:0 0 18px;font-size:clamp(28px,4.6vw,40px);line-height:1.1;font-weight:600;letter-spacing:-0.02em;">Literature degradation datasets</h1>
+      <p style="margin:0 0 36px;max-width:720px;font-size:17px;color:oklch(0.40 0.02 255);text-wrap:pretty;">What was measured, under what conditions, what behaviour was observed, and how the model describes it. Every record links back to its source publication.</p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px;">
+        <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="Search title, material, treatment, medium, method…" style="flex:1;min-width:280px;padding:11px 14px;border:1px solid oklch(0.86 0.008 255);border-radius:2px;background:#fff;font-size:14.5px;color:oklch(0.24 0.02 255);outline:none;" style-focus="border-color:oklch(0.52 0.15 255);">
+        <span style="font:400 13px 'IBM Plex Mono',monospace;color:oklch(0.52 0.015 255);">{{ resultCount }}</span>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;padding-bottom:28px;border-bottom:1px solid oklch(0.9 0.006 255);">
+        <sc-for list="{{ filters }}" as="f" hint-placeholder-count="7">
+          <button onClick="{{ f.toggle }}" style="border:1px solid oklch(0.86 0.008 255);background:#fff;border-radius:999px;padding:6px 14px;font-size:13.5px;color:oklch(0.40 0.02 255);cursor:pointer;display:flex;align-items:center;gap:7px;" style-hover="border-color:oklch(0.52 0.15 255);">
+            <sc-if value="{{ f.on }}" hint-placeholder-val="{{ false }}"><span style="width:6px;height:6px;border-radius:50%;background:oklch(0.52 0.15 255);"></span></sc-if>
+            {{ f.label }}
+          </button>
+        </sc-for>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:20px;">
+        <sc-for list="{{ shownExamples }}" as="ex" hint-placeholder-count="6">
+          <button onClick="{{ ex.open }}" style="text-align:left;border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:0;cursor:pointer;display:flex;flex-direction:column;overflow:hidden;transition:border-color 140ms,transform 140ms;" style-hover="border-color:oklch(0.52 0.15 255);transform:translateY(-2px);">
+            <div style="height:112px;border-bottom:1px solid oklch(0.94 0.004 255);background-image:linear-gradient(oklch(0.94 0.004 255) 1px, transparent 1px), linear-gradient(90deg, oklch(0.94 0.004 255) 1px, transparent 1px);background-size:28px 28px;display:flex;align-items:center;justify-content:center;">
+              <span style="font:400 11px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);letter-spacing:0.06em;">preview plot</span>
+            </div>
+            <div style="padding:18px 20px 20px;display:flex;flex-direction:column;gap:9px;flex:1;">
+              <div style="font-size:16.5px;font-weight:600;line-height:1.32;letter-spacing:-0.01em;color:oklch(0.24 0.02 255);text-wrap:pretty;">{{ ex.title }}</div>
+              <div style="font-size:13.5px;line-height:1.45;color:oklch(0.52 0.015 255);font-style:italic;font-family:'IBM Plex Serif',Georgia,serif;">{{ ex.question }}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">
+                <sc-for list="{{ ex.tags }}" as="tag" hint-placeholder-count="3">
+                  <span style="font:400 11.5px 'IBM Plex Mono',monospace;padding:3px 8px;background:oklch(0.96 0.004 255);border-radius:2px;color:oklch(0.46 0.015 255);">{{ tag }}</span>
+                </sc-for>
+              </div>
+              <div style="margin-top:auto;padding-top:12px;font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">{{ ex.source }}</div>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:60px 0;text-align:center;font-size:15px;color:oklch(0.52 0.015 255);">No example matches this query. <button onClick="{{ clearSearch }}" style="background:none;border:0;padding:0;font:inherit;color:oklch(0.52 0.15 255);cursor:pointer;text-decoration:underline;">Clear filters</button></div>
+      </sc-if>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ detail }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <button onClick="{{ closeDetail }}" style="background:none;border:0;padding:0;margin-bottom:24px;font:400 13px 'IBM Plex Mono',monospace;color:oklch(0.52 0.015 255);cursor:pointer;" style-hover="color:oklch(0.52 0.15 255);">&larr; All examples</button>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:28px;align-items:start;">
+        <div>
+          <h1 style="margin:0 0 12px;font-size:32px;line-height:1.16;font-weight:600;letter-spacing:-0.02em;text-wrap:pretty;">{{ detail.title }}</h1>
+          <p style="margin:0 0 22px;font-size:16px;color:oklch(0.40 0.02 255);text-wrap:pretty;">{{ detail.description }}</p>
+
+          <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:20px 22px 16px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+              <span style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);">Degradation curve</span>
+              <span style="font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">zoom &middot; pan &middot; reset &middot; hover values</span>
+            </div>
+            <div style="display:flex;gap:14px;">
+              <div style="writing-mode:vertical-rl;transform:rotate(180deg);font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.46 0.015 255);text-align:center;padding:8px 0;">{{ detail.yAxis }}</div>
+              <div style="flex:1;height:320px;border-left:1.5px solid oklch(0.30 0.02 255);border-bottom:1.5px solid oklch(0.30 0.02 255);background-image:linear-gradient(oklch(0.945 0.004 255) 1px, transparent 1px), linear-gradient(90deg, oklch(0.945 0.004 255) 1px, transparent 1px);background-size:40px 32px;display:flex;align-items:center;justify-content:center;">
+                <span style="font:400 12.5px 'IBM Plex Mono',monospace;color:oklch(0.58 0.015 255);letter-spacing:0.04em;">plot area — experimental points + model curve</span>
+              </div>
+            </div>
+            <div style="text-align:center;padding:10px 0 4px;margin-left:26px;font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.46 0.015 255);">{{ detail.xAxis }}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:18px;padding-top:14px;border-top:1px solid oklch(0.94 0.004 255);margin-left:26px;">
+              <sc-for list="{{ detail.series }}" as="s" hint-placeholder-count="3">
+                <span style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:oklch(0.40 0.02 255);cursor:pointer;">
+                  <span style="width:16px;height:16px;border:1px solid oklch(0.82 0.01 255);border-radius:2px;display:flex;align-items:center;justify-content:center;font:500 10px 'IBM Plex Mono',monospace;color:oklch(0.52 0.15 255);">&#10003;</span>
+                  {{ s }}
+                </span>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+            <button style="border:1px solid oklch(0.86 0.008 255);background:#fff;border-radius:2px;padding:9px 16px;font-size:14px;color:oklch(0.40 0.02 255);cursor:not-allowed;">Use in Your Particle</button>
+            <button style="border:1px solid oklch(0.86 0.008 255);background:#fff;border-radius:2px;padding:9px 16px;font-size:14px;color:oklch(0.40 0.02 255);cursor:not-allowed;">Load into sandbox</button>
+            <button style="border:1px solid oklch(0.86 0.008 255);background:#fff;border-radius:2px;padding:9px 16px;font-size:14px;color:oklch(0.40 0.02 255);cursor:not-allowed;">Show data table</button>
+            <span style="align-self:center;font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">actions land in MVP 1–4</span>
+          </div>
+
+          <div style="margin-top:32px;border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:22px 24px;">
+            <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:14px;">Source notes &amp; provenance</div>
+            <p style="margin:0;font-size:14.5px;line-height:1.6;color:oklch(0.40 0.02 255);text-wrap:pretty;">{{ detail.provenance }}</p>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:20px 22px;">
+            <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:12px;">Publication</div>
+            <div style="font-family:'IBM Plex Serif',Georgia,serif;font-size:15.5px;line-height:1.45;margin-bottom:10px;">{{ detail.source }}</div>
+            <a href="#" style="font:400 13px 'IBM Plex Mono',monospace;">Open source article &rarr;</a>
+          </div>
+
+          <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:20px 22px;">
+            <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:8px;">Experimental metadata</div>
+            <sc-for list="{{ detail.meta }}" as="m" hint-placeholder-count="9">
+              <div style="display:flex;gap:14px;padding:8px 0;border-bottom:1px solid oklch(0.95 0.004 255);align-items:baseline;">
+                <span style="flex:0 0 42%;font-size:13.5px;color:oklch(0.52 0.015 255);">{{ m.k }}</span>
+                <span style="flex:1;font:400 13.5px 'IBM Plex Mono',monospace;color:oklch(0.24 0.02 255);">{{ m.v }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:20px 22px;">
+            <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:8px;">Model / fit metadata</div>
+            <sc-for list="{{ detail.fit }}" as="m" hint-placeholder-count="4">
+              <div style="display:flex;gap:14px;padding:8px 0;border-bottom:1px solid oklch(0.95 0.004 255);align-items:baseline;">
+                <span style="flex:0 0 42%;font-size:13.5px;color:oklch(0.52 0.015 255);">{{ m.k }}</span>
+                <span style="flex:1;font:400 13.5px 'IBM Plex Mono',monospace;color:oklch(0.24 0.02 255);">{{ m.v }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+  </main>
+  </sc-if>
+
+  <!-- ============ YOUR PARTICLE ============ -->
+  <sc-if value="{{ isParticle }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:1220px;margin:0 auto;padding:56px clamp(16px,4vw,32px) 96px;">
+    <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:16px;">04 / Your Particle</div>
+    <h1 style="margin:0 0 18px;font-size:clamp(28px,4.6vw,40px);line-height:1.1;font-weight:600;letter-spacing:-0.02em;">Analyse your own degradation curve</h1>
+    <p style="margin:0 0 34px;max-width:720px;font-size:17px;color:oklch(0.40 0.02 255);text-wrap:pretty;">Import a normal laboratory CSV or delimited text file — no reformatting into a site-specific layout. Stop after Quick Fit if that answers your question, or continue into the complete coupled model.</p>
+
+    <div style="display:flex;gap:0;flex-wrap:wrap;border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;margin-bottom:34px;overflow:hidden;">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+        <div style="flex:1;min-width:170px;padding:16px 18px;border-right:1px solid oklch(0.94 0.004 255);display:flex;flex-direction:column;gap:5px;">
+          <span style="font:500 11px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">{{ s.num }}</span>
+          <span style="font-size:14.5px;font-weight:500;color:oklch(0.24 0.02 255);">{{ s.name }}</span>
+          <span style="font:400 11.5px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">{{ s.phase }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:24px;">
+        <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:22px 24px;">
+          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:16px;">1 &middot; Import data</div>
+          <div style="border:1.5px dashed oklch(0.80 0.02 255);border-radius:2px;padding:36px 20px;text-align:center;background:oklch(0.98 0.004 255);">
+            <div style="font-size:15.5px;margin-bottom:6px;">Drop a CSV or delimited text file here</div>
+            <div style="font-size:13.5px;color:oklch(0.52 0.015 255);">or <span style="color:oklch(0.52 0.15 255);">browse your files</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:18px;">
+            <sc-for list="{{ importFields }}" as="f" hint-placeholder-count="6">
+              <label style="display:flex;flex-direction:column;gap:6px;">
+                <span style="font-size:12.5px;color:oklch(0.52 0.015 255);">{{ f.label }}</span>
+                <span style="padding:9px 12px;border:1px solid oklch(0.88 0.008 255);border-radius:2px;font:400 13.5px 'IBM Plex Mono',monospace;color:oklch(0.46 0.015 255);background:oklch(0.985 0.003 255);">{{ f.value }}</span>
+              </label>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:22px 24px;">
+          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:14px;">2 &middot; Preview &amp; column mapping</div>
+          <div style="border:1px solid oklch(0.93 0.005 255);border-radius:2px;overflow:hidden;">
+            <div style="display:flex;background:oklch(0.97 0.004 255);border-bottom:1px solid oklch(0.93 0.005 255);">
+              <span style="flex:0 0 44px;padding:9px 12px;font:500 12px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">#</span>
+              <span style="flex:1;padding:9px 12px;font:500 12px 'IBM Plex Mono',monospace;color:oklch(0.46 0.015 255);">time</span>
+              <span style="flex:1;padding:9px 12px;font:500 12px 'IBM Plex Mono',monospace;color:oklch(0.46 0.015 255);">observable</span>
+              <span style="flex:0 0 78px;padding:9px 12px;font:500 12px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">use</span>
+            </div>
+            <sc-for list="{{ previewRows }}" as="row" hint-placeholder-count="5">
+              <div style="display:flex;border-bottom:1px solid oklch(0.96 0.004 255);">
+                <span style="flex:0 0 44px;padding:8px 12px;font:400 13px 'IBM Plex Mono',monospace;color:oklch(0.68 0.015 255);">{{ row.i }}</span>
+                <span style="flex:1;padding:8px 12px;font:400 13px 'IBM Plex Mono',monospace;color:oklch(0.72 0.012 255);">{{ row.t }}</span>
+                <span style="flex:1;padding:8px 12px;font:400 13px 'IBM Plex Mono',monospace;color:oklch(0.72 0.012 255);">{{ row.y }}</span>
+                <span style="flex:0 0 78px;padding:8px 12px;font:400 13px 'IBM Plex Mono',monospace;color:oklch(0.72 0.012 255);">{{ row.use }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:12px;font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">rows shown are placeholders — parsing arrives in MVP 2</div>
+        </div>
+
+        <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:22px 24px;">
+          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:14px;">3 &middot; Quick Fit configuration</div>
+          <sc-for list="{{ fitConfig }}" as="c" hint-placeholder-count="4">
+            <div style="display:flex;justify-content:space-between;gap:16px;align-items:baseline;padding:10px 0;border-bottom:1px solid oklch(0.95 0.004 255);">
+              <span style="font-size:14px;color:oklch(0.40 0.02 255);">{{ c.k }}</span>
+              <span style="font:400 13.5px 'IBM Plex Mono',monospace;color:oklch(0.24 0.02 255);text-align:right;">{{ c.v }}</span>
+            </div>
+          </sc-for>
+          <button style="margin-top:18px;width:100%;padding:12px;border:0;border-radius:2px;background:oklch(0.52 0.15 255);color:#fff;font-size:15px;font-weight:500;cursor:not-allowed;opacity:0.45;">Run Quick Fit</button>
+          <div style="margin-top:10px;text-align:center;font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">enabled in MVP 2</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:24px;position:sticky;top:90px;">
+        <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:22px 24px 18px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+            <span style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);">Data &amp; fit</span>
+            <span style="font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">residuals &middot; reset view</span>
+          </div>
+          <div style="display:flex;gap:14px;">
+            <div style="writing-mode:vertical-rl;transform:rotate(180deg);font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.46 0.015 255);text-align:center;padding:8px 0;">dissolved Si, %</div>
+            <div style="flex:1;height:300px;border-left:1.5px solid oklch(0.30 0.02 255);border-bottom:1.5px solid oklch(0.30 0.02 255);background-image:linear-gradient(oklch(0.945 0.004 255) 1px, transparent 1px), linear-gradient(90deg, oklch(0.945 0.004 255) 1px, transparent 1px);background-size:40px 32px;display:flex;align-items:center;justify-content:center;">
+              <span style="font:400 12.5px 'IBM Plex Mono',monospace;color:oklch(0.58 0.015 255);">no dataset loaded</span>
+            </div>
+          </div>
+          <div style="text-align:center;padding:10px 0 0;margin-left:26px;font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.46 0.015 255);">time, h</div>
+        </div>
+
+        <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:22px 24px;">
+          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:14px;">Fit result</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;">
+            <sc-for list="{{ fitResults }}" as="r" hint-placeholder-count="4">
+              <div style="border:1px solid oklch(0.94 0.004 255);border-radius:2px;padding:14px 16px;">
+                <div style="font-size:12.5px;color:oklch(0.52 0.015 255);margin-bottom:6px;">{{ r.k }}</div>
+                <div style="font:400 20px 'IBM Plex Mono',monospace;color:oklch(0.72 0.012 255);">{{ r.v }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <p style="margin:16px 0 0;font-size:13.5px;line-height:1.55;color:oklch(0.52 0.015 255);text-wrap:pretty;">A fitted characteristic time is an <em>effective</em> quantity. Several physical parameters can contribute to the same value, so a single degradation curve does not identify them independently.</p>
+        </div>
+
+        <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:22px 24px;">
+          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:14px;">Next</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <sc-for list="{{ nextActions }}" as="a" hint-placeholder-count="4">
+              <span style="border:1px solid oklch(0.88 0.008 255);border-radius:2px;padding:9px 15px;font-size:14px;color:oklch(0.52 0.015 255);background:oklch(0.985 0.003 255);">{{ a }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ============ DESIGN SANDBOX ============ -->
+  <sc-if value="{{ isDesign }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:1220px;margin:0 auto;padding:56px clamp(16px,4vw,32px) 96px;">
+    <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:16px;">05 / {{ sandboxNav }}</div>
+    <h1 style="margin:0 0 18px;font-size:clamp(28px,4.6vw,40px);line-height:1.1;font-weight:600;letter-spacing:-0.02em;">{{ sandboxTitle }}</h1>
+    <p style="margin:0 0 34px;max-width:760px;font-size:17px;color:oklch(0.40 0.02 255);text-wrap:pretty;">A forward virtual experiment: choose particle, treatment, environment and barrier-layer parameters, and read off the predicted degradation profile with t<sub>50</sub> and t<sub>90</sub>. Later, work backwards from a target degradation time.</p>
+
+    <div style="display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;">
+      <span style="border:1px solid oklch(0.52 0.15 255);background:oklch(0.52 0.15 255 / 0.07);border-radius:2px;padding:9px 16px;font-size:14px;color:oklch(0.40 0.10 255);">Blank design</span>
+      <span style="border:1px solid oklch(0.88 0.008 255);background:#fff;border-radius:2px;padding:9px 16px;font-size:14px;color:oklch(0.52 0.015 255);">Start from a literature example</span>
+      <span style="border:1px solid oklch(0.88 0.008 255);background:#fff;border-radius:2px;padding:9px 16px;font-size:14px;color:oklch(0.52 0.015 255);">Target-driven mode &middot; MVP 4.1</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <sc-for list="{{ designGroups }}" as="g" hint-placeholder-count="4">
+          <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:20px 22px;">
+            <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:12px;">{{ g.name }}</div>
+            <sc-for list="{{ g.fields }}" as="f" hint-placeholder-count="4">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid oklch(0.95 0.004 255);">
+                <span style="font-size:14px;color:oklch(0.40 0.02 255);display:flex;align-items:center;gap:7px;">
+                  {{ f.k }}
+                  <span style="width:14px;height:14px;border:1px solid oklch(0.84 0.01 255);border-radius:50%;font:500 9px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);display:inline-flex;align-items:center;justify-content:center;">i</span>
+                </span>
+                <span style="display:flex;align-items:center;gap:10px;">
+                  <span style="font:400 13.5px 'IBM Plex Mono',monospace;color:oklch(0.24 0.02 255);">{{ f.v }}</span>
+                  <span style="font:400 11px 'IBM Plex Mono',monospace;color:oklch(0.68 0.015 255);border:1px solid oklch(0.92 0.005 255);border-radius:2px;padding:2px 6px;">{{ f.status }}</span>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+        <button style="padding:13px;border:0;border-radius:2px;background:oklch(0.52 0.15 255);color:#fff;font-size:15px;font-weight:500;cursor:not-allowed;opacity:0.45;">Run virtual experiment</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;position:sticky;top:90px;">
+        <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:22px 24px 18px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+            <span style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);">Predicted degradation</span>
+            <span style="font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.62 0.015 255);">current &middot; previous &middot; saved variants</span>
+          </div>
+          <div style="display:flex;gap:14px;">
+            <div style="writing-mode:vertical-rl;transform:rotate(180deg);font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.46 0.015 255);text-align:center;padding:8px 0;">degraded fraction</div>
+            <div style="flex:1;height:290px;border-left:1.5px solid oklch(0.30 0.02 255);border-bottom:1.5px solid oklch(0.30 0.02 255);background-image:linear-gradient(oklch(0.945 0.004 255) 1px, transparent 1px), linear-gradient(90deg, oklch(0.945 0.004 255) 1px, transparent 1px);background-size:40px 32px;display:flex;align-items:center;justify-content:center;">
+              <span style="font:400 12.5px 'IBM Plex Mono',monospace;color:oklch(0.58 0.015 255);">prediction appears here &middot; t50 / t90 markers</span>
+            </div>
+          </div>
+          <div style="text-align:center;padding:10px 0 0;margin-left:26px;font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.46 0.015 255);">time, days</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:16px;">
+          <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="3">
+            <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:16px 18px;">
+              <div style="font:400 12px 'IBM Plex Mono',monospace;color:oklch(0.52 0.015 255);margin-bottom:8px;">{{ m.k }}</div>
+              <div style="font:400 22px 'IBM Plex Mono',monospace;color:oklch(0.72 0.012 255);">{{ m.v }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="border:1px solid oklch(0.62 0.15 45 / 0.35);background:oklch(0.62 0.15 45 / 0.07);border-radius:2px;padding:18px 22px;">
+          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.45 0.10 45);margin-bottom:10px;">Evidence &amp; extrapolation</div>
+          <p style="margin:0 0 12px;font-size:14px;line-height:1.55;color:oklch(0.38 0.06 45);text-wrap:pretty;">Every empirically supported dependency will carry a link to the literature examples behind it, and any parameter outside the supported range will be flagged as extrapolation. Combining two stabilising modifications is not presented as experimentally validated unless evidence exists.</p>
+          <button onClick="{{ goExamples }}" style="background:none;border:0;padding:0;font:400 13px 'IBM Plex Mono',monospace;color:oklch(0.45 0.10 45);cursor:pointer;text-decoration:underline;">View supporting data &rarr;</button>
+        </div>
+
+        <div style="border:1px solid oklch(0.9 0.006 255);background:#fff;border-radius:2px;padding:20px 22px;">
+          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.52 0.015 255);margin-bottom:12px;">Saved variants</div>
+          <sc-for list="{{ variants }}" as="v" hint-placeholder-count="2">
+            <div style="display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid oklch(0.95 0.004 255);font-size:14px;">
+              <span style="color:oklch(0.40 0.02 255);">{{ v.name }}</span>
+              <span style="font:400 13px 'IBM Plex Mono',monospace;color:oklch(0.72 0.012 255);">{{ v.note }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </main>
+  </sc-if>
+
+  <footer style="border-top:1px solid oklch(0.9 0.006 255);background:#fff;">
+    <div style="max-width:1220px;margin:0 auto;padding:28px clamp(16px,4vw,32px);display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:baseline;font-size:13.5px;color:oklch(0.52 0.015 255);">
+      <span>Interactive companion to a scientific article on porous-material biodegradation.</span>
+      <span style="font:400 12.5px 'IBM Plex Mono',monospace;">MVP 0 &middot; shell &amp; navigation</span>
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultSection&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;theory&quot;,&quot;examples&quot;,&quot;particle&quot;,&quot;design&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Review&quot;},&quot;sandboxLabel&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Design Your Nanoparticle&quot;,&quot;Nanoparticle Sandbox&quot;,&quot;Bake Your Own Nanoparticle&quot;],&quot;default&quot;:&quot;Design Your Nanoparticle&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Naming&quot;},&quot;showRoadmapBadges&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Review&quot;}}">
+class Component extends DCLogic {
+  state = { section: null, detail: null, search: "", filters: {} };
+
+  sec() { return this.state.section || this.props.defaultSection || "home"; }
+  go(s) { return () => this.setState({ section: s, detail: null }); }
+
+  data() {
+    return [
+      {
+        title: "Effect of oxidation temperature on porous-silicon degradation",
+        question: "Does thermal oxidation slow the dissolution of porous-Si nanoparticles?",
+        tags: ["porous silicon", "nanoparticle", "oxidation"],
+        source: "Placeholder source \u00b7 to be curated",
+        description: "Degradation of porous-silicon nanoparticles thermally oxidised at several temperatures, followed by dissolved-silicon release into buffer at physiological pH.",
+        yAxis: "dissolved Si, % of total",
+        xAxis: "time, h",
+        series: ["Experiment (points)", "Fast-diffusion limit", "Full coupled model"],
+        provenance: "Values digitised from the source figure; no smoothing applied. Sampling times taken as reported. Normalisation to total silicon content follows the original authors' definition. Digitisation uncertainty is not propagated.",
+        meta: [
+          { k: "Material", v: "porous Si" }, { k: "Geometry", v: "nanoparticle" },
+          { k: "Particle size", v: "\u2014" }, { k: "Porosity", v: "\u2014" },
+          { k: "Treatment", v: "thermal oxidation" }, { k: "Medium", v: "buffer" },
+          { k: "pH", v: "7.4" }, { k: "Temperature", v: "37 \u00b0C" },
+          { k: "Observable", v: "dissolved Si" }, { k: "Method", v: "not specified" }
+        ],
+        fit: [
+          { k: "Model regime", v: "fast diffusion" }, { k: "Fitted", v: "\u03c4_eff" },
+          { k: "Fixed", v: "porosity, radius" }, { k: "Weighting", v: "\u2014" }, { k: "Fit quality", v: "\u2014" }
+        ]
+      },
+      {
+        title: "Porosity dependence of dissolution rate in porous-silicon films",
+        question: "How strongly does porosity control the observed degradation timescale?",
+        tags: ["porous silicon", "porous layer", "porosity"],
+        source: "Placeholder source \u00b7 to be curated",
+        description: "Free-standing porous-silicon layers of differing porosity dissolved under identical conditions, tracked as remaining silicon.",
+        yAxis: "remaining Si, fraction",
+        xAxis: "time, h",
+        series: ["Experiment (points)", "Fast-diffusion limit"],
+        provenance: "Reported directly in the source table; no digitisation required. Remaining-fraction convention preserved as published.",
+        meta: [
+          { k: "Material", v: "porous Si" }, { k: "Geometry", v: "porous layer" },
+          { k: "Thickness", v: "\u2014" }, { k: "Porosity", v: "range studied" },
+          { k: "Treatment", v: "as-etched" }, { k: "Medium", v: "buffer" },
+          { k: "pH", v: "7.4" }, { k: "Temperature", v: "37 \u00b0C" },
+          { k: "Observable", v: "remaining Si" }, { k: "Method", v: "gravimetric" }
+        ],
+        fit: [
+          { k: "Model regime", v: "fast diffusion" }, { k: "Fitted", v: "\u03c4_eff per porosity" },
+          { k: "Fixed", v: "geometry" }, { k: "Weighting", v: "\u2014" }, { k: "Fit quality", v: "\u2014" }
+        ]
+      },
+      {
+        title: "Degradation of mesoporous silica nanoparticles in simulated body fluid",
+        question: "Is the same two-process description transferable to silica?",
+        tags: ["silica", "nanoparticle", "SBF"],
+        source: "Placeholder source \u00b7 to be curated",
+        description: "Mesoporous silica nanoparticles incubated in simulated body fluid, silicic-acid concentration measured over time.",
+        yAxis: "silicic acid, mg L\u207b\u00b9",
+        xAxis: "time, days",
+        series: ["Experiment (points)", "Diffusion-controlled limit", "Full coupled model"],
+        provenance: "Digitised from the source figure. Concentration axis converted to mg L\u207b\u00b9 using the reported particle loading; the conversion is shown in the export metadata.",
+        meta: [
+          { k: "Material", v: "mesoporous silica" }, { k: "Geometry", v: "nanoparticle" },
+          { k: "Particle size", v: "\u2014" }, { k: "Pore size", v: "\u2014" },
+          { k: "Treatment", v: "calcined" }, { k: "Medium", v: "SBF" },
+          { k: "pH", v: "7.4" }, { k: "Temperature", v: "37 \u00b0C" },
+          { k: "Observable", v: "silicic acid" }, { k: "Method", v: "colorimetric" }
+        ],
+        fit: [
+          { k: "Model regime", v: "diffusion-controlled" }, { k: "Fitted", v: "\u03c4_eff" },
+          { k: "Fixed", v: "loading, radius" }, { k: "Weighting", v: "\u2014" }, { k: "Fit quality", v: "\u2014" }
+        ]
+      },
+      {
+        title: "pH dependence of silicic-acid release from porous silicon",
+        question: "How does the surrounding pH shift the characteristic degradation time?",
+        tags: ["porous silicon", "environment", "pH"],
+        source: "Placeholder source \u00b7 to be curated",
+        description: "One particle batch degraded in buffers of several pH values, with dissolved silicon sampled at matched time points.",
+        yAxis: "dissolved Si, %",
+        xAxis: "time, h",
+        series: ["Experiment (points)", "Fast-diffusion limit"],
+        provenance: "Digitised from the source figure. Individual pH series were reported in one panel; series separation was done by marker style.",
+        meta: [
+          { k: "Material", v: "porous Si" }, { k: "Geometry", v: "microparticle" },
+          { k: "Particle size", v: "\u2014" }, { k: "Porosity", v: "\u2014" },
+          { k: "Treatment", v: "as-etched" }, { k: "Medium", v: "buffer series" },
+          { k: "pH", v: "range studied" }, { k: "Temperature", v: "37 \u00b0C" },
+          { k: "Observable", v: "dissolved Si" }, { k: "Method", v: "ICP" }
+        ],
+        fit: [
+          { k: "Model regime", v: "fast diffusion" }, { k: "Fitted", v: "\u03c4_eff per pH" },
+          { k: "Fixed", v: "geometry, porosity" }, { k: "Weighting", v: "\u2014" }, { k: "Fit quality", v: "\u2014" }
+        ]
+      },
+      {
+        title: "Calcination effects on porous-silicon microparticle dissolution",
+        question: "Does high-temperature treatment change the regime, not only the rate?",
+        tags: ["porous silicon", "microparticle", "calcination"],
+        source: "Placeholder source \u00b7 to be curated",
+        description: "Microparticles calcined at two conditions and compared with untreated material under identical incubation.",
+        yAxis: "remaining Si, %",
+        xAxis: "time, days",
+        series: ["Experiment (points)", "Fast-diffusion limit", "Full coupled model"],
+        provenance: "Digitised from the source figure; the untreated control was reported in a separate panel and is aligned here on a common time axis.",
+        meta: [
+          { k: "Material", v: "porous Si" }, { k: "Geometry", v: "microparticle" },
+          { k: "Particle size", v: "\u2014" }, { k: "Porosity", v: "\u2014" },
+          { k: "Treatment", v: "calcination" }, { k: "Medium", v: "buffer" },
+          { k: "pH", v: "7.4" }, { k: "Temperature", v: "37 \u00b0C" },
+          { k: "Observable", v: "remaining Si" }, { k: "Method", v: "ICP" }
+        ],
+        fit: [
+          { k: "Model regime", v: "coupled" }, { k: "Fitted", v: "one parameter" },
+          { k: "Fixed", v: "all others" }, { k: "Weighting", v: "\u2014" }, { k: "Fit quality", v: "\u2014" }
+        ]
+      },
+      {
+        title: "Barrier coating slows degradation of porous-silicon nanoparticles",
+        question: "How much of the delay is attributable to the coating as a transport barrier?",
+        tags: ["porous silicon", "nanoparticle", "coating"],
+        source: "Placeholder source \u00b7 to be curated",
+        description: "Coated and uncoated particles from the same batch, degraded side by side; the coating contributes a transport barrier without a dissolution source of its own.",
+        yAxis: "dissolved Si, %",
+        xAxis: "time, days",
+        series: ["Experiment, uncoated", "Experiment, coated", "Full coupled model"],
+        provenance: "Digitised from the source figure. Coating thickness reported as a nominal value; whether it refers to a dry or hydrated layer is not stated in the source.",
+        meta: [
+          { k: "Material", v: "porous Si" }, { k: "Geometry", v: "nanoparticle" },
+          { k: "Particle size", v: "\u2014" }, { k: "Porosity", v: "\u2014" },
+          { k: "Coating", v: "present" }, { k: "Medium", v: "buffer" },
+          { k: "pH", v: "7.4" }, { k: "Temperature", v: "37 \u00b0C" },
+          { k: "Observable", v: "dissolved Si" }, { k: "Method", v: "ICP" }
+        ],
+        fit: [
+          { k: "Model regime", v: "coupled + barrier" }, { k: "Fitted", v: "barrier parameter" },
+          { k: "Fixed", v: "core parameters" }, { k: "Weighting", v: "\u2014" }, { k: "Fit quality", v: "\u2014" }
+        ]
+      }
+    ];
+  }
+
+  renderVals() {
+    const s = this.sec();
+    const all = this.data();
+    const q = this.state.search.trim().toLowerCase();
+    const active = Object.keys(this.state.filters).filter(k => this.state.filters[k]);
+    const shown = all.filter(e => {
+      const hay = (e.title + " " + e.question + " " + e.tags.join(" ") + " " + e.source).toLowerCase();
+      const okQ = !q || hay.indexOf(q) >= 0;
+      const okF = active.every(f => e.tags.indexOf(f) >= 0);
+      return okQ && okF;
+    }).map((e, i) => Object.assign({}, e, { open: () => this.setState({ detail: e }) }));
+
+    const filterLabels = ["porous silicon", "silica", "nanoparticle", "microparticle", "porous layer", "oxidation", "calcination", "coating", "pH"];
+    const sandboxNav = this.props.sandboxLabel || "Design Your Nanoparticle";
+
+    return {
+      isHome: s === "home", isTheory: s === "theory", isExamples: s === "examples",
+      isParticle: s === "particle", isDesign: s === "design",
+      goHome: this.go("home"), goTheory: this.go("theory"), goExamples: this.go("examples"),
+      goParticle: this.go("particle"), goDesign: this.go("design"),
+      badges: this.props.showRoadmapBadges !== false,
+      sandboxNav,
+      sandboxTitle: sandboxNav === "Design Your Nanoparticle" ? "Build a particle before you make it" : sandboxNav,
+
+      journey: [{ label: "Learn" }, { label: "Inspect evidence" }, { label: "Analyse your data" }, { label: "Explore the full model" }],
+
+      entryCards: [
+        { num: "01", title: "Browse examples", body: "Curated literature degradation datasets with experimental metadata, model curves and a link to every source.", cta: "Open catalogue", go: this.go("examples") },
+        { num: "02", title: "Analyse my data", body: "Import a laboratory CSV, map your time and measurement columns, and fit a limiting model to get a characteristic timescale.", cta: "Start an analysis", go: this.go("particle") },
+        { num: "03", title: "Design a particle", body: "Choose particle, treatment and environment parameters and read the predicted degradation profile with t50 and t90.", cta: "Open the sandbox", go: this.go("design") },
+        { num: "04", title: "Read the theory", body: "Dissolution, transport, symmetry reduction, limiting regimes and coatings — in the same terms the tools use.", cta: "Read the model", go: this.go("theory") }
+      ],
+
+      roadmap: [
+        { id: "MVP 0", name: "Shell & navigation", state: "this build" },
+        { id: "MVP 1", name: "Examples browser", state: "next" },
+        { id: "MVP 2", name: "Import & Quick Fit", state: "planned" },
+        { id: "MVP 3", name: "Full model", state: "planned" },
+        { id: "MVP 4", name: "Design sandbox", state: "planned" },
+        { id: "MVP 5", name: "Theory", state: "planned" }
+      ],
+
+      theory: [
+        { num: "6.2.1", title: "Physical picture", body: "A porous particle loses material by dissolution while dissolved species are transported out of the pore network.", figure: "schematic: porous particle, two coupled processes", link: "See it in an example" },
+        { num: "6.2.2", title: "Effective local description", body: "Why microscopic pore boundaries are not tracked individually, and what local porosity stands in for.", figure: "schematic: microscopic vs effective medium", link: "See it in an example" },
+        { num: "6.2.3", title: "General spatial model", body: "What varies in space, what varies in time, what generates dissolved species and what carries them away.", figure: "schematic: transport + source field", link: "See it in an example" },
+        { num: "6.2.4", title: "Symmetry reduction", body: "For nanoparticles, spherical symmetry reduces the problem to a radial one. Other geometries need other assumptions.", figure: "schematic: 3D \u2192 radial coordinate", link: "See it in an example" },
+        { num: "6.2.5", title: "Competing characteristic times", body: "Dissolution and diffusion each carry a timescale; their ratio decides which description applies.", figure: "diagram: regime map in timescale ratio", link: "See it in an example" },
+        { num: "6.2.6", title: "Limiting regime: fast diffusion", body: "Transport does not limit the process; the observed kinetics are controlled by dissolution.", figure: "plot: dissolution-controlled curve family", link: "Fit this regime in Your Particle" },
+        { num: "6.2.7", title: "Limiting regime: diffusion-controlled", body: "Dissolution proceeds locally fast, dissolved species accumulate, and transport becomes limiting.", figure: "plot: transport-limited curve family", link: "Fit this regime in Your Particle" },
+        { num: "6.2.8", title: "General coupled regime", body: "When the timescales are comparable neither limit suffices and the complete model must be solved.", figure: "plot: limit vs full model overlay", link: "Open the full model" },
+        { num: "6.2.9", title: "Surface\u2013porosity closure", body: "Relating accessible reactive surface to porosity is what makes the model usable; cylindrical and spherical pore representations are supported.", figure: "schematic: cylindrical vs spherical pores", link: "See supporting data" },
+        { num: "6.2.10", title: "Coated particles", body: "An external barrier layer adds transport resistance without necessarily carrying the same dissolution source.", figure: "schematic: core + barrier layer", link: "Try a coating in the sandbox" }
+      ],
+
+      search: this.state.search,
+      onSearch: e => this.setState({ search: e.target.value }),
+      clearSearch: () => this.setState({ search: "", filters: {} }),
+      filters: filterLabels.map(l => ({
+        label: l, on: !!this.state.filters[l],
+        toggle: () => this.setState(st => ({ filters: Object.assign({}, st.filters, { [l]: !st.filters[l] }) }))
+      })),
+      shownExamples: shown,
+      noResults: shown.length === 0,
+      resultCount: shown.length + " of " + all.length + " examples",
+      detail: this.state.detail,
+      noDetail: !this.state.detail,
+      closeDetail: () => this.setState({ detail: null }),
+
+      steps: [
+        { num: "01", name: "Import data", phase: "MVP 2" },
+        { num: "02", name: "Define observable", phase: "MVP 2" },
+        { num: "03", name: "Quick Fit", phase: "MVP 2" },
+        { num: "04", name: "Full model", phase: "MVP 3" },
+        { num: "05", name: "Export", phase: "MVP 2" }
+      ],
+      importFields: [
+        { label: "Delimiter", value: "auto-detect" },
+        { label: "Decimal mark", value: "." },
+        { label: "Header lines to skip", value: "0" },
+        { label: "Time column", value: "not mapped" },
+        { label: "Measurement column", value: "not mapped" },
+        { label: "Observable", value: "dissolved Si, %" }
+      ],
+      previewRows: [
+        { i: "1", t: "\u2014", y: "\u2014", use: "\u2713" },
+        { i: "2", t: "\u2014", y: "\u2014", use: "\u2713" },
+        { i: "3", t: "\u2014", y: "\u2014", use: "\u2713" },
+        { i: "4", t: "\u2014", y: "\u2014", use: "\u2713" },
+        { i: "5", t: "\u2014", y: "\u2014", use: "\u2014" }
+      ],
+      fitConfig: [
+        { k: "Model regime", v: "fast diffusion (limiting)" },
+        { k: "Free parameters", v: "\u03c4_eff" },
+        { k: "Fixed parameters", v: "none" },
+        { k: "Weighting", v: "uniform" },
+        { k: "Points included", v: "\u2014 of \u2014" }
+      ],
+      fitResults: [
+        { k: "Characteristic time \u03c4_eff", v: "\u2014" },
+        { k: "Uncertainty", v: "\u2014" },
+        { k: "Goodness of fit", v: "\u2014" },
+        { k: "Points used", v: "\u2014" }
+      ],
+      nextActions: ["Compare with full model", "Explore parameters", "Export result", "Fit another model"],
+
+      designGroups: [
+        { name: "Particle", fields: [
+          { k: "Material", v: "porous Si", status: "assumed" },
+          { k: "Geometry", v: "sphere", status: "assumed" },
+          { k: "Radius", v: "\u2014 nm", status: "not set" },
+          { k: "Porosity", v: "\u2014", status: "not set" },
+          { k: "Pore geometry", v: "cylindrical", status: "assumed" }
+        ] },
+        { name: "Material treatment", fields: [
+          { k: "Oxidation", v: "none", status: "assumed" },
+          { k: "Calcination", v: "none", status: "assumed" },
+          { k: "Surface chemistry", v: "\u2014", status: "not set" }
+        ] },
+        { name: "Environment", fields: [
+          { k: "Medium", v: "buffer", status: "assumed" },
+          { k: "pH", v: "7.4", status: "fixed default" },
+          { k: "Temperature", v: "37 \u00b0C", status: "fixed default" },
+          { k: "Particle concentration", v: "\u2014 mg mL\u207b\u00b9", status: "not set" }
+        ] },
+        { name: "Barrier layer", fields: [
+          { k: "Coating", v: "absent", status: "assumed" },
+          { k: "Coating thickness", v: "\u2014 nm", status: "not set" },
+          { k: "Barrier transport", v: "\u2014", status: "not set" }
+        ] }
+      ],
+      metrics: [{ k: "t50", v: "\u2014" }, { k: "t90", v: "\u2014" }, { k: "\u03c4", v: "\u2014" }],
+      variants: [
+        { name: "Variant A \u2014 uncoated", note: "empty" },
+        { name: "Variant B \u2014 coated", note: "empty" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
