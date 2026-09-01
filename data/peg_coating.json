@@ -1,0 +1,399 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "peg_coating",
+  "title": "PEG coating molecular weight",
+  "factor": {
+    "name": "PEG molecular weight",
+    "symbol": "M_PEG",
+    "units": "Da",
+    "description": "Mesoporous silicon particles grafted with poly(ethylene glycol) of increasing chain length. The polymer layer is a diffusion barrier for the released silicic acid, and heavier chains build a thicker, denser layer.",
+    "effect": "Increasing PEG molecular weight slows the process; K drops 11x from uncoated to PEG 5000."
+  },
+  "source": {
+    "citation": "B. Godin et al., J. Biomed. Mater. Res. A 94 (2010) 1236-1243",
+    "figure": "Fig. 8a",
+    "reference_label": "Ref. 19",
+    "doi": "10.1002/jbm.a.32807",
+    "digitized": true,
+    "note": "Points digitized from the published figure. Porosity and surface area interpolated from a BJH calibration at 40 nm pore size, not measured in this work."
+  },
+  "conditions": {
+    "medium": "PBS",
+    "temperature_C": 37,
+    "pH": 7.4,
+    "assay": "dissolved silicon, normalized to total",
+    "time_units": "h",
+    "hydrodynamics": "static"
+  },
+  "axes": {
+    "x": {
+      "label": "Time",
+      "units": "h"
+    },
+    "y": {
+      "label": "Remaining Si fraction",
+      "units": "-",
+      "min": 0,
+      "max": 1
+    }
+  },
+  "models": [
+    {
+      "id": "walls",
+      "name": "Cellular walls",
+      "morphology": "thin walls between pores",
+      "sigma": "2*sqrt(p) - p",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\left[1-\\frac{4}{\\left(1+W_0\\!\\left(y_0e^{y_0-2Kt}\\right)\\right)^2}\\right],\\quad y_0=\\frac{2}{\\sqrt{p_0}}-1",
+      "formula_plain": "F = [1 − 4/(1+W₀(y₀·e^(y₀−2Kt)))²] / (1−p₀),   y₀ = 2/√p₀ − 1",
+      "formula_js": "y0=2/Math.sqrt(p0)-1; y=lambertW0(y0*Math.exp(y0-2*K*t)); F=(1-4/Math.pow(1+y,2))/(1-p0)",
+      "needs": [
+        "lambertW0"
+      ],
+      "t_final": "(y0 + ln(y0) - 1)/(2K)"
+    },
+    {
+      "id": "wires",
+      "name": "Nanowires",
+      "morphology": "cylindrical skeleton",
+      "sigma": "sqrt(p*(1-p))",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\frac{u^2}{1+u^2},\\quad u=\\sqrt{\\frac{1-p_0}{p_0}}-\\frac{Kt}{2}",
+      "formula_plain": "F = [u²/(1+u²)] / (1−p₀),   u = √((1−p₀)/p₀) − Kt/2",
+      "formula_js": "u=Math.max(Math.sqrt((1-p0)/p0)-K*t/2,0); F=(u*u/(1+u*u))/(1-p0)",
+      "needs": [],
+      "t_final": "2*sqrt((1-p0)/p0)/K"
+    },
+    {
+      "id": "dots",
+      "name": "Nanodots",
+      "morphology": "spherical residual nodes",
+      "sigma": "p^(1/3)*(1-p)^(2/3)",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\frac{v^3}{1+v^3},\\quad v=\\left(\\frac{1-p_0}{p_0}\\right)^{1/3}-\\frac{Kt}{3}",
+      "formula_plain": "F = [v³/(1+v³)] / (1−p₀),   v = ((1−p₀)/p₀)^(1/3) − Kt/3",
+      "formula_js": "v=Math.max(Math.cbrt((1-p0)/p0)-K*t/3,0); F=(v*v*v/(1+v*v*v))/(1-p0)",
+      "needs": [],
+      "t_final": "3*cbrt((1-p0)/p0)/K"
+    },
+    {
+      "id": "fragmentation",
+      "name": "Fragmentation",
+      "morphology": "skeleton breaking into fragments",
+      "sigma": "sqrt(p)*(1-sqrt(p))",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1-w^2}{1-p_0},\\quad w=\\frac{1}{1+W_0\\!\\left(e^{-C-1}\\right)},\\quad C=\\ln\\frac{\\sqrt{p_0}}{1-\\sqrt{p_0}}-\\frac{1}{\\sqrt{p_0}}+\\frac{Kt}{2}",
+      "formula_plain": "F = (1−w²)/(1−p₀),   w = 1/(1+W₀(e^(−C−1))),   C = ln(√p₀/(1−√p₀)) − 1/√p₀ + Kt/2",
+      "formula_js": "C=Math.log(Math.sqrt(p0)/(1-Math.sqrt(p0)))-1/Math.sqrt(p0)+K*t/2; w=1/(1+lambertW0(Math.exp(-C-1))); F=(1-w*w)/(1-p0)",
+      "needs": [
+        "lambertW0"
+      ],
+      "t_final": null
+    },
+    {
+      "id": "slow_diffusion",
+      "name": "Slow diffusion",
+      "morphology": "shrinking particle, porosity constant",
+      "sigma": null,
+      "param": {
+        "name": "t_f",
+        "units": "h"
+      },
+      "formula_latex": "F(t)=u^3,\\quad u=\\tfrac{1}{2}+\\cos\\!\\left(\\frac{2\\pi-\\arccos\\!\\left(2t/t_f-1\\right)}{3}\\right)",
+      "formula_plain": "F = u³,   u = ½ + cos[(2π − arccos(2t/t_f − 1))/3]",
+      "formula_js": "x=Math.min(Math.max(2*t/tf-1,-1),1); u=0.5+Math.cos((2*Math.PI-Math.acos(x))/3); F=(t>=tf)?0:u*u*u",
+      "needs": [],
+      "t_final": "t_f",
+      "note": "Does not use p0. Diffusion-limited regime, single parameter."
+    }
+  ],
+  "series": [
+    {
+      "id": "peg0",
+      "label": "Uncoated",
+      "level": 0,
+      "porosity": 0.82,
+      "style": {
+        "color": "#4f9cff",
+        "marker": "o",
+        "marker_size": 9,
+        "line_width": 2.6
+      },
+      "data": [
+        {
+          "t": -0.142566,
+          "F": 1
+        },
+        {
+          "t": 1.85336,
+          "F": 0.72305
+        },
+        {
+          "t": 7.983707,
+          "F": 0.23054
+        },
+        {
+          "t": 17.96334,
+          "F": 0.07186
+        },
+        {
+          "t": 47.90224,
+          "F": 0.03443
+        },
+        {
+          "t": 71.995927,
+          "F": 0
+        }
+      ],
+      "fits": {
+        "walls": {
+          "param": 0.020128,
+          "r2": 0.9796,
+          "param_name": "K"
+        },
+        "wires": {
+          "param": 0.06806,
+          "r2": 0.9878,
+          "param_name": "K"
+        },
+        "dots": {
+          "param": 0.098649,
+          "r2": 0.9904,
+          "param_name": "K"
+        },
+        "fragmentation": {
+          "param": 0.411249,
+          "r2": 0.9966,
+          "param_name": "K"
+        },
+        "slow_diffusion": {
+          "param": 30.344396,
+          "r2": 0.9803,
+          "param_name": "t_f"
+        }
+      }
+    },
+    {
+      "id": "peg1214",
+      "label": "PEG 1214",
+      "level": 1214,
+      "porosity": 0.82,
+      "style": {
+        "color": "#2fd6a5",
+        "marker": "s",
+        "marker_size": 9,
+        "line_width": 2.6
+      },
+      "data": [
+        {
+          "t": -0.142566,
+          "F": 0.99701
+        },
+        {
+          "t": 8.268839,
+          "F": 0.91168
+        },
+        {
+          "t": 18.105906,
+          "F": 0.53443
+        },
+        {
+          "t": 24.093686,
+          "F": 0.26796
+        },
+        {
+          "t": 47.90224,
+          "F": 0.0524
+        },
+        {
+          "t": 71.85336,
+          "F": 0.02246
+        }
+      ],
+      "fits": {
+        "walls": {
+          "param": 0.005721,
+          "r2": 0.972,
+          "param_name": "K"
+        },
+        "wires": {
+          "param": 0.016711,
+          "r2": 0.9618,
+          "param_name": "K"
+        },
+        "dots": {
+          "param": 0.023418,
+          "r2": 0.957,
+          "param_name": "K"
+        },
+        "fragmentation": {
+          "param": 0.095744,
+          "r2": 0.9395,
+          "param_name": "K"
+        },
+        "slow_diffusion": {
+          "param": 124.417016,
+          "r2": 0.8409,
+          "param_name": "t_f"
+        }
+      }
+    },
+    {
+      "id": "peg3400",
+      "label": "PEG 3400",
+      "level": 3400,
+      "porosity": 0.82,
+      "style": {
+        "color": "#f0a63a",
+        "marker": "^",
+        "marker_size": 9,
+        "line_width": 2.6
+      },
+      "data": [
+        {
+          "t": -0.285132,
+          "F": 0.9985
+        },
+        {
+          "t": 7.983707,
+          "F": 0.97605
+        },
+        {
+          "t": 18.105906,
+          "F": 0.74701
+        },
+        {
+          "t": 24.093686,
+          "F": 0.52695
+        },
+        {
+          "t": 48.044807,
+          "F": 0.33683
+        },
+        {
+          "t": 71.710794,
+          "F": 0.06737
+        }
+      ],
+      "fits": {
+        "walls": {
+          "param": 0.003029,
+          "r2": 0.954,
+          "param_name": "K"
+        },
+        "wires": {
+          "param": 0.009505,
+          "r2": 0.9662,
+          "param_name": "K"
+        },
+        "dots": {
+          "param": 0.013486,
+          "r2": 0.9612,
+          "param_name": "K"
+        },
+        "fragmentation": {
+          "param": 0.055049,
+          "r2": 0.9424,
+          "param_name": "K"
+        },
+        "slow_diffusion": {
+          "param": 253.58312,
+          "r2": 0.7956,
+          "param_name": "t_f"
+        }
+      }
+    },
+    {
+      "id": "peg5000",
+      "label": "PEG 5000",
+      "level": 5000,
+      "porosity": 0.82,
+      "style": {
+        "color": "#ff6b5e",
+        "marker": "D",
+        "marker_size": 9,
+        "line_width": 2.6
+      },
+      "data": [
+        {
+          "t": -0.142566,
+          "F": 0.9985
+        },
+        {
+          "t": 2.423625,
+          "F": 0.99701
+        },
+        {
+          "t": 8.696538,
+          "F": 0.98353
+        },
+        {
+          "t": 18.533605,
+          "F": 0.88922
+        },
+        {
+          "t": 23.95112,
+          "F": 0.67665
+        },
+        {
+          "t": 47.90224,
+          "F": 0.47754
+        },
+        {
+          "t": 71.85336,
+          "F": 0.26347
+        }
+      ],
+      "fits": {
+        "walls": {
+          "param": 0.002148,
+          "r2": 0.9629,
+          "param_name": "K"
+        },
+        "wires": {
+          "param": 0.006606,
+          "r2": 0.9596,
+          "param_name": "K"
+        },
+        "dots": {
+          "param": 0.00912,
+          "r2": 0.9537,
+          "param_name": "K"
+        },
+        "fragmentation": {
+          "param": 0.03567,
+          "r2": 0.9388,
+          "param_name": "K"
+        },
+        "slow_diffusion": {
+          "param": 524.569924,
+          "r2": 0.7529,
+          "param_name": "t_f"
+        }
+      }
+    }
+  ],
+  "ui_hints": {
+    "model_selector": true,
+    "param_slider": {
+      "enabled": true,
+      "scale": "log",
+      "range_factor": 10,
+      "note": "Slider multiplies/divides the fitted parameter by up to range_factor."
+    },
+    "default_model": "fragmentation",
+    "show_r2": true
+  }
+}

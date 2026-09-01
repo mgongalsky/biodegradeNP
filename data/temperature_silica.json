@@ -1,0 +1,430 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "temperature_silica",
+  "title": "Medium temperature (silica NPs)",
+  "factor": {
+    "name": "Temperature",
+    "symbol": "T",
+    "units": "C",
+    "description": "Silica nanoparticles held at 20-60 C. The Arrhenius slope over these three points gives an activation energy of 50.7 kJ/mol, typical of Si-O-Si hydrolysis.",
+    "effect": "K rises 12x from 20 to 60 C, Q10 = 2.0."
+  },
+  "source": {
+    "citation": "L. Spitzmüller et al., J. Nanopart. Res. 25 (2023) 40",
+    "figure": "Fig. 2a",
+    "reference_label": "Chunk 2",
+    "doi": "10.1007/s11051-023-05688-4",
+    "digitized": true,
+    "note": "Points digitized from the published figure. The y axis is absolute dissolved silica in mg/L, converted to a fraction using the measured plateau of each series. The 80 C series exists in the source but is not fitted here: it saturates before the first useful point."
+  },
+  "conditions": {
+    "medium": "aqueous",
+    "temperature_C": null,
+    "pH": null,
+    "assay": "dissolved silica, mg/L, normalized to the measured plateau",
+    "time_units": "h",
+    "hydrodynamics": "stirred"
+  },
+  "axes": {
+    "x": {
+      "label": "Time",
+      "units": "h"
+    },
+    "y": {
+      "label": "Remaining Si fraction",
+      "units": "-",
+      "min": 0,
+      "max": 1
+    }
+  },
+  "models": [
+    {
+      "id": "walls",
+      "name": "Cellular walls",
+      "morphology": "thin walls between pores",
+      "sigma": "2*sqrt(p) - p",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\left[1-\\frac{4}{\\left(1+W_0\\!\\left(y_0e^{y_0-2Kt}\\right)\\right)^2}\\right],\\quad y_0=\\frac{2}{\\sqrt{p_0}}-1",
+      "formula_plain": "F = [1 − 4/(1+W₀(y₀·e^(y₀−2Kt)))²] / (1−p₀),   y₀ = 2/√p₀ − 1",
+      "formula_js": "y0=2/Math.sqrt(p0)-1; y=lambertW0(y0*Math.exp(y0-2*K*t)); F=(1-4/Math.pow(1+y,2))/(1-p0)",
+      "needs": [
+        "lambertW0"
+      ],
+      "t_final": "(y0 + ln(y0) - 1)/(2K)"
+    },
+    {
+      "id": "wires",
+      "name": "Nanowires",
+      "morphology": "cylindrical skeleton",
+      "sigma": "sqrt(p*(1-p))",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\frac{u^2}{1+u^2},\\quad u=\\sqrt{\\frac{1-p_0}{p_0}}-\\frac{Kt}{2}",
+      "formula_plain": "F = [u²/(1+u²)] / (1−p₀),   u = √((1−p₀)/p₀) − Kt/2",
+      "formula_js": "u=Math.max(Math.sqrt((1-p0)/p0)-K*t/2,0); F=(u*u/(1+u*u))/(1-p0)",
+      "needs": [],
+      "t_final": "2*sqrt((1-p0)/p0)/K"
+    },
+    {
+      "id": "dots",
+      "name": "Nanodots",
+      "morphology": "spherical residual nodes",
+      "sigma": "p^(1/3)*(1-p)^(2/3)",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\frac{v^3}{1+v^3},\\quad v=\\left(\\frac{1-p_0}{p_0}\\right)^{1/3}-\\frac{Kt}{3}",
+      "formula_plain": "F = [v³/(1+v³)] / (1−p₀),   v = ((1−p₀)/p₀)^(1/3) − Kt/3",
+      "formula_js": "v=Math.max(Math.cbrt((1-p0)/p0)-K*t/3,0); F=(v*v*v/(1+v*v*v))/(1-p0)",
+      "needs": [],
+      "t_final": "3*cbrt((1-p0)/p0)/K"
+    },
+    {
+      "id": "fragmentation",
+      "name": "Fragmentation",
+      "morphology": "skeleton breaking into fragments",
+      "sigma": "sqrt(p)*(1-sqrt(p))",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1-w^2}{1-p_0},\\quad w=\\frac{1}{1+W_0\\!\\left(e^{-C-1}\\right)},\\quad C=\\ln\\frac{\\sqrt{p_0}}{1-\\sqrt{p_0}}-\\frac{1}{\\sqrt{p_0}}+\\frac{Kt}{2}",
+      "formula_plain": "F = (1−w²)/(1−p₀),   w = 1/(1+W₀(e^(−C−1))),   C = ln(√p₀/(1−√p₀)) − 1/√p₀ + Kt/2",
+      "formula_js": "C=Math.log(Math.sqrt(p0)/(1-Math.sqrt(p0)))-1/Math.sqrt(p0)+K*t/2; w=1/(1+lambertW0(Math.exp(-C-1))); F=(1-w*w)/(1-p0)",
+      "needs": [
+        "lambertW0"
+      ],
+      "t_final": null
+    },
+    {
+      "id": "slow_diffusion",
+      "name": "Slow diffusion",
+      "morphology": "shrinking particle, porosity constant",
+      "sigma": null,
+      "param": {
+        "name": "t_f",
+        "units": "h"
+      },
+      "formula_latex": "F(t)=u^3,\\quad u=\\tfrac{1}{2}+\\cos\\!\\left(\\frac{2\\pi-\\arccos\\!\\left(2t/t_f-1\\right)}{3}\\right)",
+      "formula_plain": "F = u³,   u = ½ + cos[(2π − arccos(2t/t_f − 1))/3]",
+      "formula_js": "x=Math.min(Math.max(2*t/tf-1,-1),1); u=0.5+Math.cos((2*Math.PI-Math.acos(x))/3); F=(t>=tf)?0:u*u*u",
+      "needs": [],
+      "t_final": "t_f",
+      "note": "Does not use p0. Diffusion-limited regime, single parameter."
+    }
+  ],
+  "series": [
+    {
+      "id": "T20",
+      "label": "20 C",
+      "level": 20,
+      "porosity": 0.2,
+      "style": {
+        "color": "#4f9cff",
+        "marker": "o",
+        "marker_size": 9,
+        "line_width": 2.6
+      },
+      "data": [
+        {
+          "t": 0.414269,
+          "F": 0.89701
+        },
+        {
+          "t": 0.932106,
+          "F": 0.90191
+        },
+        {
+          "t": 2.002301,
+          "F": 0.81363
+        },
+        {
+          "t": 2.934407,
+          "F": 0.80873
+        },
+        {
+          "t": 3.901036,
+          "F": 0.73026
+        },
+        {
+          "t": 5.005754,
+          "F": 0.74988
+        },
+        {
+          "t": 5.93786,
+          "F": 0.65179
+        },
+        {
+          "t": 6.973533,
+          "F": 0.56351
+        },
+        {
+          "t": 7.974684,
+          "F": 0.46052
+        },
+        {
+          "t": 9.976985,
+          "F": 0.44581
+        },
+        {
+          "t": 11.979287,
+          "F": 0.33301
+        },
+        {
+          "t": 13.947066,
+          "F": 0.28887
+        },
+        {
+          "t": 15.949367,
+          "F": 0.17607
+        },
+        {
+          "t": 17.986191,
+          "F": 0.17607
+        },
+        {
+          "t": 19.988493,
+          "F": 0.10741
+        },
+        {
+          "t": 22.9229,
+          "F": 0
+        },
+        {
+          "t": 24.027618,
+          "F": 0
+        },
+        {
+          "t": 24.994246,
+          "F": 0.06817
+        },
+        {
+          "t": 27.997699,
+          "F": 0.02894
+        }
+      ],
+      "fits": {
+        "walls": {
+          "param": 0.142089,
+          "r2": 0.8356,
+          "param_name": "K"
+        },
+        "wires": {
+          "param": 0.243943,
+          "r2": 0.8677,
+          "param_name": "K"
+        },
+        "dots": {
+          "param": 0.226425,
+          "r2": 0.9114,
+          "param_name": "K"
+        },
+        "fragmentation": {
+          "param": 0.537912,
+          "r2": 0.9544,
+          "param_name": "K"
+        },
+        "slow_diffusion": {
+          "param": 54.911067,
+          "r2": 0.869,
+          "param_name": "t_f"
+        }
+      }
+    },
+    {
+      "id": "T40",
+      "label": "40 C",
+      "level": 40,
+      "porosity": 0.2,
+      "style": {
+        "color": "#2fd6a5",
+        "marker": "s",
+        "marker_size": 9,
+        "line_width": 2.6
+      },
+      "data": [
+        {
+          "t": 0.483314,
+          "F": 0.74325
+        },
+        {
+          "t": 0.966628,
+          "F": 0.73418
+        },
+        {
+          "t": 1.967779,
+          "F": 0.4442
+        },
+        {
+          "t": 2.96893,
+          "F": 0.2539
+        },
+        {
+          "t": 5.454545,
+          "F": 0.09079
+        },
+        {
+          "t": 5.93786,
+          "F": 0.10891
+        },
+        {
+          "t": 11.910242,
+          "F": 0.06964
+        },
+        {
+          "t": 13.912543,
+          "F": 0.09985
+        },
+        {
+          "t": 15.98389,
+          "F": 0.07266
+        },
+        {
+          "t": 17.986191,
+          "F": 0.00621
+        },
+        {
+          "t": 19.988493,
+          "F": 0
+        },
+        {
+          "t": 23.958573,
+          "F": 0.00319
+        }
+      ],
+      "fits": {
+        "walls": {
+          "param": 0.576726,
+          "r2": 0.8278,
+          "param_name": "K"
+        },
+        "wires": {
+          "param": 1.105707,
+          "r2": 0.8536,
+          "param_name": "K"
+        },
+        "dots": {
+          "param": 1.077131,
+          "r2": 0.8854,
+          "param_name": "K"
+        },
+        "fragmentation": {
+          "param": 2.564047,
+          "r2": 0.9115,
+          "param_name": "K"
+        },
+        "slow_diffusion": {
+          "param": 12.845471,
+          "r2": 0.9266,
+          "param_name": "t_f"
+        }
+      }
+    },
+    {
+      "id": "T60",
+      "label": "60 C",
+      "level": 60,
+      "porosity": 0.2,
+      "style": {
+        "color": "#f0a63a",
+        "marker": "^",
+        "marker_size": 9,
+        "line_width": 2.6
+      },
+      "data": [
+        {
+          "t": 0.483314,
+          "F": 0.73991
+        },
+        {
+          "t": 0.932106,
+          "F": 0.32113
+        },
+        {
+          "t": 1.933257,
+          "F": 0.16244
+        },
+        {
+          "t": 3.003452,
+          "F": 0.08088
+        },
+        {
+          "t": 5.350978,
+          "F": 0.1426
+        },
+        {
+          "t": 5.972382,
+          "F": 0.10072
+        },
+        {
+          "t": 11.910242,
+          "F": 0.01256
+        },
+        {
+          "t": 13.981588,
+          "F": 0
+        },
+        {
+          "t": 15.98389,
+          "F": 0.04562
+        },
+        {
+          "t": 17.917146,
+          "F": 0
+        },
+        {
+          "t": 20.023015,
+          "F": 0
+        },
+        {
+          "t": 23.924051,
+          "F": 0.13158
+        }
+      ],
+      "fits": {
+        "walls": {
+          "param": 1.684214,
+          "r2": 0.824,
+          "param_name": "K"
+        },
+        "wires": {
+          "param": 3.052046,
+          "r2": 0.8261,
+          "param_name": "K"
+        },
+        "dots": {
+          "param": 2.846837,
+          "r2": 0.8279,
+          "param_name": "K"
+        },
+        "fragmentation": {
+          "param": 6.334719,
+          "r2": 0.8387,
+          "param_name": "K"
+        },
+        "slow_diffusion": {
+          "param": 5.784231,
+          "r2": 0.7987,
+          "param_name": "t_f"
+        }
+      }
+    }
+  ],
+  "ui_hints": {
+    "model_selector": true,
+    "param_slider": {
+      "enabled": true,
+      "scale": "log",
+      "range_factor": 10,
+      "note": "Slider multiplies/divides the fitted parameter by up to range_factor."
+    },
+    "default_model": "fragmentation",
+    "show_r2": true
+  }
+}

@@ -1,0 +1,390 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "ph_silica",
+  "title": "Medium pH (silica NPs)",
+  "factor": {
+    "name": "pH",
+    "symbol": "pH",
+    "units": "-",
+    "description": "Silica nanoparticles at pH 3, 4 and 5. Unlike porous silicon, silica shows almost no pH dependence in this narrow acidic range.",
+    "effect": "K spans only 1.29x over pH 3-5 and is not monotonic - no usable power law here."
+  },
+  "source": {
+    "citation": "L. Spitzmüller et al., J. Nanopart. Res. 25 (2023) 40",
+    "figure": "Fig. 3b",
+    "reference_label": "Chunk 2",
+    "doi": "10.1007/s11051-023-05688-4",
+    "digitized": true,
+    "note": "Points digitized from the published figure. The source also has pH 6, 7 and 8; those are excluded because dissolution is already 84-95% complete at the first measurement, so K is limited by time resolution rather than by chemistry."
+  },
+  "conditions": {
+    "medium": "aqueous",
+    "temperature_C": 25,
+    "pH": null,
+    "assay": "dissolved silica, mg/L, normalized to the measured plateau",
+    "time_units": "h",
+    "hydrodynamics": "stirred"
+  },
+  "axes": {
+    "x": {
+      "label": "Time",
+      "units": "h"
+    },
+    "y": {
+      "label": "Remaining Si fraction",
+      "units": "-",
+      "min": 0,
+      "max": 1
+    }
+  },
+  "models": [
+    {
+      "id": "walls",
+      "name": "Cellular walls",
+      "morphology": "thin walls between pores",
+      "sigma": "2*sqrt(p) - p",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\left[1-\\frac{4}{\\left(1+W_0\\!\\left(y_0e^{y_0-2Kt}\\right)\\right)^2}\\right],\\quad y_0=\\frac{2}{\\sqrt{p_0}}-1",
+      "formula_plain": "F = [1 − 4/(1+W₀(y₀·e^(y₀−2Kt)))²] / (1−p₀),   y₀ = 2/√p₀ − 1",
+      "formula_js": "y0=2/Math.sqrt(p0)-1; y=lambertW0(y0*Math.exp(y0-2*K*t)); F=(1-4/Math.pow(1+y,2))/(1-p0)",
+      "needs": [
+        "lambertW0"
+      ],
+      "t_final": "(y0 + ln(y0) - 1)/(2K)"
+    },
+    {
+      "id": "wires",
+      "name": "Nanowires",
+      "morphology": "cylindrical skeleton",
+      "sigma": "sqrt(p*(1-p))",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\frac{u^2}{1+u^2},\\quad u=\\sqrt{\\frac{1-p_0}{p_0}}-\\frac{Kt}{2}",
+      "formula_plain": "F = [u²/(1+u²)] / (1−p₀),   u = √((1−p₀)/p₀) − Kt/2",
+      "formula_js": "u=Math.max(Math.sqrt((1-p0)/p0)-K*t/2,0); F=(u*u/(1+u*u))/(1-p0)",
+      "needs": [],
+      "t_final": "2*sqrt((1-p0)/p0)/K"
+    },
+    {
+      "id": "dots",
+      "name": "Nanodots",
+      "morphology": "spherical residual nodes",
+      "sigma": "p^(1/3)*(1-p)^(2/3)",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\frac{v^3}{1+v^3},\\quad v=\\left(\\frac{1-p_0}{p_0}\\right)^{1/3}-\\frac{Kt}{3}",
+      "formula_plain": "F = [v³/(1+v³)] / (1−p₀),   v = ((1−p₀)/p₀)^(1/3) − Kt/3",
+      "formula_js": "v=Math.max(Math.cbrt((1-p0)/p0)-K*t/3,0); F=(v*v*v/(1+v*v*v))/(1-p0)",
+      "needs": [],
+      "t_final": "3*cbrt((1-p0)/p0)/K"
+    },
+    {
+      "id": "fragmentation",
+      "name": "Fragmentation",
+      "morphology": "skeleton breaking into fragments",
+      "sigma": "sqrt(p)*(1-sqrt(p))",
+      "param": {
+        "name": "K",
+        "units": "1/h"
+      },
+      "formula_latex": "F(t)=\\frac{1-w^2}{1-p_0},\\quad w=\\frac{1}{1+W_0\\!\\left(e^{-C-1}\\right)},\\quad C=\\ln\\frac{\\sqrt{p_0}}{1-\\sqrt{p_0}}-\\frac{1}{\\sqrt{p_0}}+\\frac{Kt}{2}",
+      "formula_plain": "F = (1−w²)/(1−p₀),   w = 1/(1+W₀(e^(−C−1))),   C = ln(√p₀/(1−√p₀)) − 1/√p₀ + Kt/2",
+      "formula_js": "C=Math.log(Math.sqrt(p0)/(1-Math.sqrt(p0)))-1/Math.sqrt(p0)+K*t/2; w=1/(1+lambertW0(Math.exp(-C-1))); F=(1-w*w)/(1-p0)",
+      "needs": [
+        "lambertW0"
+      ],
+      "t_final": null
+    },
+    {
+      "id": "slow_diffusion",
+      "name": "Slow diffusion",
+      "morphology": "shrinking particle, porosity constant",
+      "sigma": null,
+      "param": {
+        "name": "t_f",
+        "units": "h"
+      },
+      "formula_latex": "F(t)=u^3,\\quad u=\\tfrac{1}{2}+\\cos\\!\\left(\\frac{2\\pi-\\arccos\\!\\left(2t/t_f-1\\right)}{3}\\right)",
+      "formula_plain": "F = u³,   u = ½ + cos[(2π − arccos(2t/t_f − 1))/3]",
+      "formula_js": "x=Math.min(Math.max(2*t/tf-1,-1),1); u=0.5+Math.cos((2*Math.PI-Math.acos(x))/3); F=(t>=tf)?0:u*u*u",
+      "needs": [],
+      "t_final": "t_f",
+      "note": "Does not use p0. Diffusion-limited regime, single parameter."
+    }
+  ],
+  "series": [
+    {
+      "id": "sph3",
+      "label": "pH 3",
+      "level": 3,
+      "porosity": 0.2,
+      "style": {
+        "color": "#4f9cff",
+        "marker": "o",
+        "marker_size": 9,
+        "line_width": 2.6
+      },
+      "data": [
+        {
+          "t": 0.774194,
+          "F": 0.91349
+        },
+        {
+          "t": 6.83871,
+          "F": 0.83737
+        },
+        {
+          "t": 18.064516,
+          "F": 0.66089
+        },
+        {
+          "t": 28.903226,
+          "F": 0.47057
+        },
+        {
+          "t": 34.967742,
+          "F": 0.40137
+        },
+        {
+          "t": 42.064516,
+          "F": 0.29756
+        },
+        {
+          "t": 49.806452,
+          "F": 0.38061
+        },
+        {
+          "t": 64.774194,
+          "F": 0
+        },
+        {
+          "t": 78.967742,
+          "F": 0.06918
+        },
+        {
+          "t": 93.16129,
+          "F": 0.01727
+        },
+        {
+          "t": 106.967742,
+          "F": 0.02419
+        }
+      ],
+      "fits": {
+        "walls": {
+          "param": 0.034657,
+          "r2": 0.8061,
+          "param_name": "K"
+        },
+        "wires": {
+          "param": 0.066545,
+          "r2": 0.8528,
+          "param_name": "K"
+        },
+        "dots": {
+          "param": 0.063903,
+          "r2": 0.899,
+          "param_name": "K"
+        },
+        "fragmentation": {
+          "param": 0.153478,
+          "r2": 0.9328,
+          "param_name": "K"
+        },
+        "slow_diffusion": {
+          "param": 173.134096,
+          "r2": 0.8873,
+          "param_name": "t_f"
+        }
+      }
+    },
+    {
+      "id": "sph4",
+      "label": "pH 4",
+      "level": 4,
+      "porosity": 0.2,
+      "style": {
+        "color": "#2fd6a5",
+        "marker": "s",
+        "marker_size": 9,
+        "line_width": 2.6
+      },
+      "data": [
+        {
+          "t": 0.516129,
+          "F": 0.92236
+        },
+        {
+          "t": 6.967742,
+          "F": 0.8246
+        },
+        {
+          "t": 18.064516,
+          "F": 0.6837
+        },
+        {
+          "t": 28.903226,
+          "F": 0.59457
+        },
+        {
+          "t": 34.967742,
+          "F": 0.4508
+        },
+        {
+          "t": 42.064516,
+          "F": 0.35591
+        },
+        {
+          "t": 50.064516,
+          "F": 0.4508
+        },
+        {
+          "t": 65.032258,
+          "F": 0.05111
+        },
+        {
+          "t": 79.225806,
+          "F": 0
+        },
+        {
+          "t": 92.903226,
+          "F": 0.04824
+        },
+        {
+          "t": 107.096774,
+          "F": 0
+        }
+      ],
+      "fits": {
+        "walls": {
+          "param": 0.032694,
+          "r2": 0.8586,
+          "param_name": "K"
+        },
+        "wires": {
+          "param": 0.060469,
+          "r2": 0.8825,
+          "param_name": "K"
+        },
+        "dots": {
+          "param": 0.057188,
+          "r2": 0.9157,
+          "param_name": "K"
+        },
+        "fragmentation": {
+          "param": 0.136522,
+          "r2": 0.9344,
+          "param_name": "K"
+        },
+        "slow_diffusion": {
+          "param": 195.459251,
+          "r2": 0.8485,
+          "param_name": "t_f"
+        }
+      }
+    },
+    {
+      "id": "sph5",
+      "label": "pH 5",
+      "level": 5,
+      "porosity": 0.2,
+      "style": {
+        "color": "#f0a63a",
+        "marker": "^",
+        "marker_size": 9,
+        "line_width": 2.6
+      },
+      "data": [
+        {
+          "t": 0.645161,
+          "F": 0.95312
+        },
+        {
+          "t": 6.709677,
+          "F": 0.82889
+        },
+        {
+          "t": 17.806452,
+          "F": 0.55464
+        },
+        {
+          "t": 28.774194,
+          "F": 0.43276
+        },
+        {
+          "t": 34.967742,
+          "F": 0.34368
+        },
+        {
+          "t": 42.064516,
+          "F": 0.22649
+        },
+        {
+          "t": 49.935484,
+          "F": 0.25696
+        },
+        {
+          "t": 64.903226,
+          "F": 0.05537
+        },
+        {
+          "t": 78.967742,
+          "F": 0
+        },
+        {
+          "t": 93.16129,
+          "F": 0.01084
+        },
+        {
+          "t": 106.967742,
+          "F": 0
+        }
+      ],
+      "fits": {
+        "walls": {
+          "param": 0.042161,
+          "r2": 0.8302,
+          "param_name": "K"
+        },
+        "wires": {
+          "param": 0.080571,
+          "r2": 0.861,
+          "param_name": "K"
+        },
+        "dots": {
+          "param": 0.073111,
+          "r2": 0.9078,
+          "param_name": "K"
+        },
+        "fragmentation": {
+          "param": 0.17621,
+          "r2": 0.9498,
+          "param_name": "K"
+        },
+        "slow_diffusion": {
+          "param": 145.19556,
+          "r2": 0.9345,
+          "param_name": "t_f"
+        }
+      }
+    }
+  ],
+  "ui_hints": {
+    "model_selector": true,
+    "param_slider": {
+      "enabled": true,
+      "scale": "log",
+      "range_factor": 10,
+      "note": "Slider multiplies/divides the fitted parameter by up to range_factor."
+    },
+    "default_model": "fragmentation",
+    "show_r2": true
+  }
+}

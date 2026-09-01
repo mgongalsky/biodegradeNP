@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "pore_size_fixed_porosity",
+  "title": "Pore size at constant porosity",
+  "factor": {
+    "name": "Pore diameter",
+    "symbol": "d_pore",
+    "units": "nm",
+    "description": "Three mesoporous silicon batches with different pore diameters but nearly the same porosity (71-76%), which separates the pore-size effect from the porosity effect.",
+    "effect": "At fixed porosity, larger pores dissolve somewhat faster; the effect is weak (2.6x pore size gives 1.26x in K)."
+  },
+  "source": {
+    "citation": null,
+    "figure": "Fig. 5b",
+    "reference_label": "Ref. 4",
+    "doi": null,
+    "digitized": true,
+    "note": "Points digitized from the published figure. Porosity from the figure legend."
+  },
+  "conditions": {
+    "medium": "PBS",
+    "temperature_C": 37,
+    "pH": 7.4,
+    "assay": "dissolved silicon, normalized to total",
+    "time_units": "h",
+    "hydrodynamics": "static"
+  },
+  "axes": {
+    "x": { "label": "Time", "units": "h" },
+    "y": { "label": "Remaining Si fraction", "units": "-", "min": 0, "max": 1 }
+  },
+  "models": [
+    {
+      "id": "walls",
+      "name": "Cellular walls",
+      "morphology": "thin walls between pores",
+      "sigma": "2*sqrt(p) - p",
+      "param": { "name": "K", "units": "1/h" },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\left[1-\\frac{4}{\\left(1+W_0\\!\\left(y_0e^{y_0-2Kt}\\right)\\right)^2}\\right],\\quad y_0=\\frac{2}{\\sqrt{p_0}}-1",
+      "formula_plain": "F = [1 − 4/(1+W₀(y₀·e^(y₀−2Kt)))²] / (1−p₀),   y₀ = 2/√p₀ − 1",
+      "formula_js": "y0=2/Math.sqrt(p0)-1; y=lambertW0(y0*Math.exp(y0-2*K*t)); F=(1-4/Math.pow(1+y,2))/(1-p0)",
+      "needs": ["lambertW0"],
+      "t_final": "(y0 + ln(y0) - 1)/(2K)"
+    },
+    {
+      "id": "wires",
+      "name": "Nanowires",
+      "morphology": "cylindrical skeleton",
+      "sigma": "sqrt(p*(1-p))",
+      "param": { "name": "K", "units": "1/h" },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\frac{u^2}{1+u^2},\\quad u=\\sqrt{\\frac{1-p_0}{p_0}}-\\frac{Kt}{2}",
+      "formula_plain": "F = [u²/(1+u²)] / (1−p₀),   u = √((1−p₀)/p₀) − Kt/2",
+      "formula_js": "u=Math.max(Math.sqrt((1-p0)/p0)-K*t/2,0); F=(u*u/(1+u*u))/(1-p0)",
+      "needs": [],
+      "t_final": "2*sqrt((1-p0)/p0)/K"
+    },
+    {
+      "id": "dots",
+      "name": "Nanodots",
+      "morphology": "spherical residual nodes",
+      "sigma": "p^(1/3)*(1-p)^(2/3)",
+      "param": { "name": "K", "units": "1/h" },
+      "formula_latex": "F(t)=\\frac{1}{1-p_0}\\frac{v^3}{1+v^3},\\quad v=\\left(\\frac{1-p_0}{p_0}\\right)^{1/3}-\\frac{Kt}{3}",
+      "formula_plain": "F = [v³/(1+v³)] / (1−p₀),   v = ((1−p₀)/p₀)^(1/3) − Kt/3",
+      "formula_js": "v=Math.max(Math.cbrt((1-p0)/p0)-K*t/3,0); F=(v*v*v/(1+v*v*v))/(1-p0)",
+      "needs": [],
+      "t_final": "3*cbrt((1-p0)/p0)/K"
+    },
+    {
+      "id": "fragmentation",
+      "name": "Fragmentation",
+      "morphology": "skeleton breaking into fragments",
+      "sigma": "sqrt(p)*(1-sqrt(p))",
+      "param": { "name": "K", "units": "1/h" },
+      "formula_latex": "F(t)=\\frac{1-w^2}{1-p_0},\\quad w=\\frac{1}{1+W_0\\!\\left(e^{-C-1}\\right)},\\quad C=\\ln\\frac{\\sqrt{p_0}}{1-\\sqrt{p_0}}-\\frac{1}{\\sqrt{p_0}}+\\frac{Kt}{2}",
+      "formula_plain": "F = (1−w²)/(1−p₀),   w = 1/(1+W₀(e^(−C−1))),   C = ln(√p₀/(1−√p₀)) − 1/√p₀ + Kt/2",
+      "formula_js": "C=Math.log(Math.sqrt(p0)/(1-Math.sqrt(p0)))-1/Math.sqrt(p0)+K*t/2; w=1/(1+lambertW0(Math.exp(-C-1))); F=(1-w*w)/(1-p0)",
+      "needs": ["lambertW0"],
+      "t_final": null
+    },
+    {
+      "id": "slow_diffusion",
+      "name": "Slow diffusion",
+      "morphology": "shrinking particle, porosity constant",
+      "sigma": null,
+      "param": { "name": "t_f", "units": "h" },
+      "formula_latex": "F(t)=u^3,\\quad u=\\tfrac{1}{2}+\\cos\\!\\left(\\frac{2\\pi-\\arccos\\!\\left(2t/t_f-1\\right)}{3}\\right)",
+      "formula_plain": "F = u³,   u = ½ + cos[(2π − arccos(2t/t_f − 1))/3]",
+      "formula_js": "x=Math.min(Math.max(2*t/tf-1,-1),1); u=0.5+Math.cos((2*Math.PI-Math.acos(x))/3); F=(t>=tf)?0:u*u*u",
+      "needs": [],
+      "t_final": "t_f",
+      "note": "Does not use p0. Diffusion-limited regime, single parameter."
+    }
+  ],
+  "series": [
+    {
+      "id": "d7nm",
+      "label": "7 nm",
+      "level": 7.0,
+      "porosity": 0.71,
+      "pore_diameter_nm": 7.0,
+      "style": { "color": "#4f9cff", "marker": "o", "marker_size": 9, "line_width": 2.6 },
+      "data": [
+        { "t": -0.009, "F": 0.9987 },
+        { "t": 0.009, "F": 0.9962 },
+        { "t": 0.974, "F": 0.1218 },
+        { "t": 1.003, "F": 0.2602 },
+        { "t": 1.977, "F": 0.1434 },
+        { "t": 2.006, "F": 0.0888 },
+        { "t": 4.011, "F": 0.0635 },
+        { "t": 8.013, "F": 0.0 }
+      ],
+      "fits": {
+        "walls": { "param": 0.291314, "r2": 0.9619, "param_name": "K" },
+        "wires": { "param": 0.803511, "r2": 0.9632, "param_name": "K" },
+        "dots": { "param": 1.069628, "r2": 0.9636, "param_name": "K" },
+        "fragmentation": { "param": 3.794729, "r2": 0.9742, "param_name": "K" },
+        "slow_diffusion": { "param": 3.087405, "r2": 0.9717, "param_name": "t_f" }
+      }
+    },
+    {
+      "id": "d10nm",
+      "label": "10 nm",
+      "level": 10.0,
+      "porosity": 0.76,
+      "pore_diameter_nm": 10.0,
+      "style": { "color": "#2fd6a5", "marker": "s", "marker_size": 9, "line_width": 2.6 },
+      "data": [
+        { "t": 0.0, "F": 0.9987 },
+        { "t": 0.114, "F": 0.8858 },
+        { "t": 0.984, "F": 0.1586 },
+        { "t": 1.996, "F": 0.0609 },
+        { "t": 3.992, "F": 0.019 },
+        { "t": 7.994, "F": 0.0025 }
+      ],
+      "fits": {
+        "walls": { "param": 0.241709, "r2": 0.9954, "param_name": "K" },
+        "wires": { "param": 0.738208, "r2": 0.9961, "param_name": "K" },
+        "dots": { "param": 1.028768, "r2": 0.996, "param_name": "K" },
+        "fragmentation": { "param": 4.019431, "r2": 0.9963, "param_name": "K" },
+        "slow_diffusion": { "param": 3.181276, "r2": 0.9579, "param_name": "t_f" }
+      }
+    },
+    {
+      "id": "d18nm",
+      "label": "18 nm",
+      "level": 18.0,
+      "porosity": 0.73,
+      "pore_diameter_nm": 18.0,
+      "style": { "color": "#f0a63a", "marker": "^", "marker_size": 9, "line_width": 2.6 },
+      "data": [
+        { "t": 0.0, "F": 0.9987 },
+        { "t": 0.984, "F": 0.1193 },
+        { "t": 2.006, "F": 0.0926 },
+        { "t": 3.992, "F": 0.0152 },
+        { "t": 7.994, "F": 0.0 }
+      ],
+      "fits": {
+        "walls": { "param": 0.288959, "r2": 0.9878, "param_name": "K" },
+        "wires": { "param": 0.865389, "r2": 0.9878, "param_name": "K" },
+        "dots": { "param": 1.207903, "r2": 0.9878, "param_name": "K" },
+        "fragmentation": { "param": 4.800099, "r2": 0.9903, "param_name": "K" },
+        "slow_diffusion": { "param": 1.92322, "r2": 0.9878, "param_name": "t_f" }
+      }
+    }
+  ],
+  "ui_hints": {
+    "model_selector": true,
+    "param_slider": { "enabled": true, "scale": "log", "range_factor": 10, "note": "Slider multiplies/divides the fitted parameter by up to range_factor." },
+    "default_model": "fragmentation",
+    "show_r2": true
+  }
+}
